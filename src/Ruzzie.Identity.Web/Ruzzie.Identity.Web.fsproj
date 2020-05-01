@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+
+        <Description>Identity and user management logic for web apps</Description>
+        <Copyright>Copyright © Dorus Verhoeckx 2020</Copyright>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <Authors>Dorus Verhoeckx</Authors>
+        <PackageVersion>0.0.0.1</PackageVersion>
+        <Title>Ruzzie.Identity.Web</Title>
+        <Company>D Crafting</Company>
+    </PropertyGroup>
+
+    <ItemGroup>
+        
+        <Compile Include="Authentication.fs" />
+        <Compile Include="ResultLib.fs" />
+        <Compile Include="Constants.fs" />
+        <Compile Include="DomainTypes.fs" />
+        <Compile Include="Email.fs" />
+        <Compile Include="DbTypes.fs" />
+        <Compile Include="Security.fs" />
+        <Compile Include="ApiTypes.fs" />
+        <Compile Include="Validation.fs" />
+        <Compile Include="Log.fs" />
+        <Compile Include="UseCases\Shared.fs" />
+        <Compile Include="UseCases\Users.fs" />
+        <Compile Include="UseCases\Organisations.fs" />
+        <Compile Include="UseCases\Unregister.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="RestSharp" Version="106.10.1" />
+        <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Ruzzie.Common.Security\Ruzzie.Common.Security.csproj" />
+      <ProjectReference Include="..\Ruzzie.Common.Validation\Ruzzie.Common.Validation.csproj" />
+      <ProjectReference Include="..\Ruzzie.Identity.Storage\Ruzzie.Identity.Storage.csproj" />
+    </ItemGroup>
+
+</Project>
