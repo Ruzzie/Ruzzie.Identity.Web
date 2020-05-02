@@ -59,12 +59,7 @@ namespace Ruzzie.Identity.Storage.Azure.Entities
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(lastname));
             }
-
-            if (string.IsNullOrWhiteSpace(emailValidationToken))
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(emailValidationToken));
-            }
-
+          
             CreationDateTimeUtc = creationDateTimeUtc;
             LastModifiedDateTimeUtc = lastModifiedDateTimeUtc ?? creationDateTimeUtc;
             AccountValidationStatus = accountValidationStatus;
