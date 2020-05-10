@@ -12,6 +12,11 @@ module ResultLib =
     ///andThen infix operator. Applies a mapping on an Ok result for continuation.
     let (.=>) r m = andThen m r
 
+    let andThenListOfError mapFunc result =
+         match result with
+            | Ok x -> mapFunc x |> toListOfError
+            | Error e -> Error e
+    let (.=>*) r m = andThenListOfError m r
     let apply fResult xResult =
         match fResult, xResult with
         | Ok f, Ok x ->
