@@ -25,7 +25,7 @@ module Organisations =
 
     let userIsInOrganisation (orgRepository: IOrganisationRepository) orgId userId =
         try
-            //Check if the user already exists
+            //Check if the user is in the given organisation
             Ok(orgRepository.UserIsInOrganisation((StringRequiredValue.value orgId), (EmailAddressValue.value userId)))
         with ex ->
             createInvalidErrorWithExn "email" "userIsInOrganisation.unexpectedError" ex
