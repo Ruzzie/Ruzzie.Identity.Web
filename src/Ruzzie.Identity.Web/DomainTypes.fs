@@ -20,18 +20,25 @@ module DomainTypes =
         | Unexpected of (int * string)
         | Unauthorized
 
-    let createErrorWithErrInfo errKind fieldName details  =
-         Error
-            (errKind
+    let createErrKindWithErrInfo errKind fieldName details =
+        errKind
                 ((Some
                     { ErrInfo.FieldName = Some fieldName
-                      ErrInfo.Details = Some(details) })))
+                      ErrInfo.Details = Some(details) }))
+    let createErrorWithErrInfo errKind fieldName details  =
+         Error
+            (createErrKindWithErrInfo errKind fieldName details)
 
     let createInvalidError fieldName details =
         createErrorWithErrInfo Invalid fieldName details
 
     let createInvalidErrorWithExn fieldName detail (exn: Exception) =
         createInvalidError fieldName (detail :: exn.Message :: [])
+
+    let createInvalidErrKindWithExnOpt fieldName detail (exn: Exception option)  =
+        match exn with
+        | Some ex -> createErrKindWithErrInfo Invalid fieldName (detail :: ex.Message :: [])
+        | None  -> createErrKindWithErrInfo Invalid fieldName (detail :: [])
 
     let detailsOrEmptyString errInfoOption =
         match errInfoOption with

@@ -28,6 +28,7 @@
         <Compile Include="UseCases\Users.fs" />
         <Compile Include="UseCases\Organisations.fs" />
         <Compile Include="UseCases\Unregister.fs" />
+        <Compile Include="UseCases\Authorization.fs" />
     </ItemGroup>
 
     <ItemGroup>
