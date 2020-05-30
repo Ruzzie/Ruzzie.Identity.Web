@@ -12,6 +12,14 @@
         <Company>D Crafting</Company>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\Ruzzie.Identity.Web.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\Ruzzie.Identity.Web.xml</DocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
         
         <Compile Include="Authentication.fs" />
