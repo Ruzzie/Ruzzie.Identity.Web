@@ -56,6 +56,16 @@ module DomainTypes =
             | None -> "generic"
         | None -> "generic"
 
+    let addErrDetails errInfoOption detailToAdd =
+        match errInfoOption with
+        | Some errInfo ->
+            match errInfo.Details with
+            | Some details -> { errInfo with Details = Some(detailToAdd :: details) }
+            | None -> { errInfo with Details = Some(detailToAdd :: []) }
+        | None ->
+            { FieldName = None
+              Details = Some(detailToAdd :: []) }
+
     let toErrorMessage errType errInfoOption =
         sprintf "error.%s%s" (errType.GetType().Name) (detailsOrEmptyString errInfoOption)
 
@@ -160,16 +170,6 @@ module DomainTypes =
                 else
                     input.Contains(part.Substring(0, (Math.Min(part.Length, 6))), StringComparison.OrdinalIgnoreCase)
             else true
-
-        let addErrDetails errInfoOption detailToAdd =
-            match errInfoOption with
-            | Some errInfo ->
-                match errInfo.Details with
-                | Some details -> { errInfo with Details = Some(detailToAdd :: details) }
-                | None -> { errInfo with Details = Some(detailToAdd :: []) }
-            | None ->
-                { FieldName = None
-                  Details = Some(detailToAdd :: []) }
 
         let pwdStrengthValidation errInfoOption (forEmail: String) (forFirstname: String) (forLastname: String) requiredStr =
             let value = StringRequiredValue.value requiredStr
