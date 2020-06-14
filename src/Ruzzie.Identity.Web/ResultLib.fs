@@ -1,7 +1,12 @@
 ﻿namespace Ruzzie.Identity.Web
 
+[<AutoOpen>]
 module ResultLib =
     let toListOfError r = Result.mapError (fun e -> e :: []) r
+
+    /// infix Result.mapError
+    /// 'a -> ('b -> 'c) -> Result<'d,'b> -> Result<'d,'c>
+    let (<^>) res mapping = Result.mapError mapping res
 
     [<CompiledName("AndThen")>]
     let andThen mapFunc result =
