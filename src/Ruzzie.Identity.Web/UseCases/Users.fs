@@ -288,7 +288,16 @@ module Users =
                                             userEntity.Password <- hashedPassword
                                             userEntity.PasswordResetToken <- String.Empty
                                             userEntity.PasswordResetTokenUpdateDateTimeUtc <- Nullable utcNow
-                                            Ok userEntity
+
+                                            //When the account was not yet validated, set the account to validated,
+                                            //since the reset password has also confirmed the email
+                                            if userEntity.AccountValidationStatus <> (int <| AccountValidationStatus.Validated) then
+                                                userEntity.AccountValidationStatus <- int <| AccountValidationStatus.Validated
+                                                userEntity.ValidationStatusUpdateDateTimeUtc <- Nullable utcNow
+                                                userEntity.EmailValidationToken <- String.Empty
+                                                Ok userEntity
+                                            else
+                                                Ok userEntity
                                         )
                                     .=>  updateUser repository utcNow
                                     .=> (fun updatedEntity -> Ok(ignore updatedEntity))

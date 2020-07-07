@@ -360,6 +360,42 @@ let ``reset password for valid user with valid new password`` () =
     |> ignore
 
 [<Test>]
+let ``reset password for valid user with valid new password should also validate the account`` () =
+    //Arrange
+    let utcNow = DateTimeOffset.UtcNow
+    let resetTokenStr =
+        AccountValidation.generateAccountTokenString "valid@valid.org" utcNow (fun e -> e) TokenType.ResetPassword
+
+    let stubRepo =
+     UserRepositoryTestStub
+        ((fun _ -> true), (fun entity -> entity),
+         (fun email ->
+             UserRegistration
+                 (email, "newValidPassword ff323!@", "fake", "stub", validFakeAccountValidationToken email, DateTimeOffset.UtcNow,
+                  passwordResetToken = resetTokenStr)),
+         (fun entity utcNow ->
+                        Assert.AreEqual(entity.AccountValidationStatus, int <| AccountValidationStatus.Validated)
+                        entity))
+
+
+    //Act
+    let runResult =
+        AccountValidation.createToken resetTokenStr utcNow (fun d -> d)
+        .=> (fun token ->
+            UseCases.Users.resetPassword DateTimeOffset.UtcNow (stubRepo) (fun d -> d)
+                { ResetPasswordRequest.Token = token
+                  ResetPasswordRequest.NewPasswordInput = "newValidPassword ff323!@" })
+
+    //Assert
+    match runResult with
+    | Ok _ -> ignore
+    | Error errors ->
+        Assert.Fail(errors.ToString())
+        ignore
+
+    |> ignore
+
+[<Test>]
 let ``reset password for valid user with invalid new password`` () =
     //Arrange
     let utcNow = DateTimeOffset.UtcNow
