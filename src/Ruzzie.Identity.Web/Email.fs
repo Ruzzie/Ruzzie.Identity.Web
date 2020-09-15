@@ -11,19 +11,21 @@ module Email =
     type SendEmailRequest =
         { From: StringNonEmpty.T
           To: EmailAddressValue.T
+          ReplyTo: EmailAddressValue.T option
           Subject: StringNonEmpty.T
           TextContent: StringNonEmpty.T
-          HtmlContent: StringNonEmpty.T }
+          HtmlContent: string}
 
 
     type EmailService = {
         Send : SendEmailRequest -> Result<HttpStatusCode, HttpStatusCode * string>
     }
 
-    let createSendEmailRequest from ``to`` subject text html =
-        let create from toEmail subject text html =
+    let createSendEmailRequest from ``to`` (replyTo:string option) subject text html=
+        let create from toEmail replyTo subject text html =
             {From = from
              To = toEmail
+             ReplyTo = replyTo
              Subject = subject
              TextContent = text
              HtmlContent = html}
@@ -33,12 +35,15 @@ module Email =
                                                Details = None})))
         <.*.> (EmailAddressValue.create ``to`` (Some({FieldName = Some("createSendEmailRequest.to")
                                                       Details = None})))
+        <*.> match replyTo with
+             |Some replyToStr -> (EmailAddressValue.create replyToStr (Some({FieldName = Some("createSendEmailRequest.replyTo")
+                                                                             Details = None}))) |> Result.map (fun k -> Some k)
+             |None -> Ok (None)
         <*.> (StringNonEmpty.create subject (Some({FieldName = Some("createSendEmailRequest.subject")
                                                    Details = None})))
         <*.> (StringNonEmpty.create text (Some({FieldName = Some("createSendEmailRequest.text")
                                                 Details = None})))
-        <*.> (StringNonEmpty.create html (Some({FieldName = Some("createSendEmailRequest.html")
-                                                Details = None})))
+        <*.> (Ok html)
     let toErrorKindResult sendResult =
          Result.mapError (fun (status: HttpStatusCode, message) ->
                                             [Unexpected(status |> int, message)]) sendResult
@@ -64,7 +69,15 @@ module Email =
                 request.AddParameter("to", (EmailAddressValue.value emailRequest.To)) |> ignore
                 request.AddParameter("subject", (StringNonEmpty.value emailRequest.Subject)) |> ignore
                 request.AddParameter("text", (StringNonEmpty.value emailRequest.TextContent)) |> ignore
-                request.AddParameter("html", (StringNonEmpty.value emailRequest.HtmlContent)) |> ignore
+
+                if not (System.String.IsNullOrWhiteSpace(emailRequest.HtmlContent)) then
+                    request.AddParameter("html", (emailRequest.HtmlContent)) |> ignore
+                else
+                    ()
+
+                match emailRequest.ReplyTo with
+                |Some replyTo -> request.AddParameter("h:Reply-To", (EmailAddressValue.value replyTo)) |> ignore
+                |None -> ()
 
                 let response = client.Execute(request)
 

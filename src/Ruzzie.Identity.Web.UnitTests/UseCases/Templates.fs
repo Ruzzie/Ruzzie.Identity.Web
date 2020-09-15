@@ -11,7 +11,7 @@ let userRegistrationActivationMail toEmail activateActionUrl =
         sprintf
             "Welkom bij Testing, <br/> Om uw account te valideren kunt u deze link <a href=\"%s\">Activeer</a> gebruiken.<br/><br/> Het Testing Team"
             activateActionUrl
-    createSendEmailRequest "Testing <noreply@valid.org>" toEmail "Uw Testing Account activatie" text html
+    createSendEmailRequest "Testing <noreply@valid.org>" toEmail None "Uw Testing Account activatie" text html
 
 let userPasswordForgetMail toEmail resetActionUrl =
     let text =
@@ -23,7 +23,7 @@ let userPasswordForgetMail toEmail resetActionUrl =
         sprintf
             "Welkom bij Testing, <br/> Om een nieuw wachtwoord te kiezen kunt u deze link <a href=\"%s\">Reset wachtwoord</a> gebruiken.<br/><br/> Het Testing Team"
             resetActionUrl
-    createSendEmailRequest "Testing <noreply@valid.org>" toEmail "Uw Testing Account wachtwoord reset" text html
+    createSendEmailRequest "Testing <noreply@valid.org>" toEmail None "Uw Testing Account wachtwoord reset" text html
 
 let inviteUserToOrganisationEmail (byUser: ApiTypes.User) (forOrganisation: ApiTypes.UserOrganisation) toEmail
     acceptInvitationUrl =
@@ -39,4 +39,4 @@ let inviteUserToOrganisationEmail (byUser: ApiTypes.User) (forOrganisation: ApiT
     let subject =
         sprintf "U bent uitgenodigd door %s %s van %s voor een Testing Account" byUser.firstname byUser.lastname
             forOrganisation.name
-    createSendEmailRequest "Testing <noreply@valid.org>" toEmail subject text html
+    createSendEmailRequest "Testing <noreply@valid.org>" toEmail None subject text html

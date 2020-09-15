@@ -15,7 +15,7 @@ let `` Send email IntegrationTest``() =
     let emailServiceMailgun = { Send = Mailgun.mailgunSendMail apiKey domain }
 
     let testEmail =
-        createSendEmailRequest "Link Bi <noreply@ms.pvhlink.com>" "dorus.verhoeckx+inttest@gmail.com"
+        createSendEmailRequest "Link Bi <noreply@ms.pvhlink.com>" "dorus.verhoeckx+inttest@gmail.com" None
             "Integration Test" "Test text content" "Test <b>HTML</b> content"
 
 
