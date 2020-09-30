@@ -78,24 +78,26 @@ namespace Ruzzie.Identity.Storage.Azure
             }
 
             var orgEntity = _orgRepository.GetOrganisationById(organisationId);
-            if (orgEntity != default)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (orgEntity != null)
             {
                 var data = MessagePack.MessagePackSerializer.Serialize(orgEntity, ContractlessStandardResolver.Options);
                 _cache.Set($"{CacheKeyOrganisationEntityPrefix}{orgEntity.RowKey}", data);
             }
-            return orgEntity;
+            return orgEntity!;
         }
 
         public Organisation UpdateOrganisation(Organisation entity, DateTimeOffset? utcNow = default)
         {
             var updateOrganisation = _orgRepository.UpdateOrganisation(entity, utcNow);
-            if (updateOrganisation != default)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (updateOrganisation != null)
             {
                 var data = MessagePack.MessagePackSerializer.Serialize(updateOrganisation, ContractlessStandardResolver.Options);
                 _cache.Set($"{CacheKeyOrganisationEntityPrefix}{updateOrganisation.RowKey}", data);
             }
 
-            return updateOrganisation;
+            return updateOrganisation!;
         }
 
         public bool UserIsInOrganisation(string organisationId, string userId)

@@ -10,6 +10,7 @@
         <PackageVersion>0.0.0.1</PackageVersion>
         <Title>Ruzzie.Identity.Web</Title>
         <Company>D Crafting</Company>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
