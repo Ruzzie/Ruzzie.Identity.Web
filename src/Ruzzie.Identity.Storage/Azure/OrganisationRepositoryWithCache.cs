@@ -143,5 +143,10 @@ namespace Ruzzie.Identity.Storage.Azure
         {
             return _orgRepository.GetAllOrganisationInvites(organisationId, invitationStatus);
         }
+
+        public IReadOnlyList<string> GetAllOrganisationIds()
+        {
+            return _orgRepository.GetAllOrganisationIds();
+        }
     }
 }

@@ -71,6 +71,8 @@ type OrganisationRepositoryTestStub() =
         member this.GetAllOrganisationInvites(organisationId: string, invitationStatus: int) =
             invitesReadOnlyList organisationId
 
+        member this.GetAllOrganisationIds() = List<string>() :> IReadOnlyList<string>
+
 
 //let validFakePasswordResetToken email =
 //    AccountValidation.generateAccountTokenString email (DateTimeOffset.UtcNow) (fun e -> e) TokenType.ResetPassword
@@ -545,6 +547,7 @@ type OrganisationRepositoryMock(getOrganisationInvite, organisationExists, userI
             getOrganisationInvite organisationId userId
         member this.GetAllOrganisationInvites(organisationId: string, invitationStatus: int) =
             invitesReadOnlyList organisationId
+        member this.GetAllOrganisationIds() = List<string>() :> IReadOnlyList<string>
 
 
 [<Test>]

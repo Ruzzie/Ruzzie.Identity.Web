@@ -405,5 +405,21 @@ namespace Ruzzie.Identity.Storage.Azure
                 throw new Exception($"Error for [{nameof(GetAllOrganisationInvites)}] in [{_organisationInvitesTable.TableName}] with: [{organisationId}]-[{invitationStatus}]. [{e.Message}]", e);
             }
         }
+
+        public IReadOnlyList<string> GetAllOrganisationIds()
+        {
+            try
+            {
+                var allPartitions = KeyGenerators.AllAlphaNumericPartitions;
+                return _organisationTable.Pool.ExecuteOnAvailableObject(table =>
+                {
+                    return new AzureStorageTableLoader<DynamicTableEntity, string>(table, tableEntity => tableEntity.RowKey, allPartitions).AllEntities;
+                });
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error for [{nameof(GetAllOrganisationIds)}] in [{_organisationTable.TableName}]-[*]. [{e.Message}]", e);
+            }
+        }
     }
 }

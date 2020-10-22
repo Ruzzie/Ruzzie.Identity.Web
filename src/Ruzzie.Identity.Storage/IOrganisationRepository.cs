@@ -19,5 +19,7 @@ namespace Ruzzie.Identity.Storage
         TOrgInvite GetOrganisationInvite(string organisationId, string userId);
         void DeleteOrganisationInvite(string organisationId, string userId);
         IReadOnlyList<TOrgInvite> GetAllOrganisationInvites(string organisationId, int invitationStatus);
+
+        IReadOnlyList<string> GetAllOrganisationIds();
     }
 }

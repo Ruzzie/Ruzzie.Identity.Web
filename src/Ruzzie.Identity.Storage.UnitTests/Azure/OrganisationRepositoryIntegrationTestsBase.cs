@@ -303,5 +303,11 @@ namespace Ruzzie.Identity.Storage.UnitTests.Azure
             Repository.GetOrganisationsForUser(userId).Should().HaveCount(0);
             Repository.GetUsersForOrganisation(entity.RowKey).Should().HaveCount(0);
         }
+
+        [Test]
+        public void GetAllOrganisationIds_SmokeTest()
+        {
+            Repository.GetAllOrganisationIds().Should().HaveCountGreaterThan(0);
+        }
     }
 }
