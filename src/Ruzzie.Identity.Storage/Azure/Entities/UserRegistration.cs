@@ -5,14 +5,16 @@ namespace Ruzzie.Identity.Storage.Azure.Entities
 {
     public class UserRegistration : TableEntity
     {
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-        public string? Firstname { get; set; }
-        public string? Lastname { get; set; }
-        public DateTimeOffset CreationDateTimeUtc { get; set; }
+        public string?        Email                   { get; set; }
+        public string?        Password                { get; set; }
+        public string?        Firstname               { get; set; }
+        public string?        Lastname                { get; set; }
+
+        public string         SystemFeatureToggles    { get; set; } = string.Empty;
+        public DateTimeOffset CreationDateTimeUtc     { get; set; }
         public DateTimeOffset LastModifiedDateTimeUtc { get; set; }
-        public int AccountValidationStatus { get; set; }
-        public string? EmailValidationToken { get; set; }
+        public int            AccountValidationStatus { get; set; }
+        public string?        EmailValidationToken    { get; set; }
 
         public DateTimeOffset? ValidationStatusUpdateDateTimeUtc { get; set; }
 
@@ -59,7 +61,7 @@ namespace Ruzzie.Identity.Storage.Azure.Entities
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(lastname));
             }
-          
+
             CreationDateTimeUtc = creationDateTimeUtc;
             LastModifiedDateTimeUtc = lastModifiedDateTimeUtc ?? creationDateTimeUtc;
             AccountValidationStatus = accountValidationStatus;

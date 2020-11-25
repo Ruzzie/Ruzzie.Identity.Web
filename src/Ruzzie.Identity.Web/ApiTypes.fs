@@ -32,6 +32,7 @@ type AuthenticateUserResp =
       firstname: string
       lastname: string
       createdTimestamp: int64
+      systemFeatureToggles: string List
       lastModifiedTimestamp: int64
       JWT: string
       accountValidationStatus: AccountValidationStatus }
@@ -66,7 +67,8 @@ type User =
       lastname: string
       createdTimestamp: int64
       lastModifiedTimestamp: int64
-      accountValidationStatus: AccountValidationStatus
+      accountValidationStatus: AccountValidationStatus //todo: add toggles
+      systemFeatureToggles: string List
       organisations: UserOrganisation list }
 
 [<CLIMutable>] //For JSON Serialization
