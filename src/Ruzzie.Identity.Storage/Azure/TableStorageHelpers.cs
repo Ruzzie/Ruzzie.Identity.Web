@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
 using Ruzzie.Azure.Storage;
 
@@ -9,13 +10,13 @@ namespace Ruzzie.Identity.Storage.Azure
     public static class TableStorageHelpers
     {
         private const string PartitionKeyField = "PartitionKey";
-        private const string RowKeyField = "RowKey";
-        private const string OpEquals = "eq";
-        private const string OpAnd = "and";
+        private const string RowKeyField       = "RowKey";
+        private const string OpEquals          = "eq";
+        private const string OpAnd             = "and";
 
         public static bool RowExistsForPartitionKeyAndRowKey(this CloudTablePool tablePool,
-            string partitionKey,
-            string rowKey)
+                                                             string              partitionKey,
+                                                             string              rowKey)
         {
             return tablePool.Pool.RowExistsForPartitionKeyAndRowKey(partitionKey, rowKey);
         }
@@ -24,33 +25,45 @@ namespace Ruzzie.Identity.Storage.Azure
         {
             var queryFilter = TableQuery.GenerateFilterCondition(PartitionKeyField, OpEquals, partitionKey);
             queryFilter = TableQuery.CombineFilters(
-                queryFilter,
-                OpAnd,
-                TableQuery.GenerateFilterCondition(RowKeyField, OpEquals, rowKey));
+                                                    queryFilter,
+                                                    OpAnd,
+                                                    TableQuery.GenerateFilterCondition(RowKeyField, OpEquals, rowKey));
             return queryFilter;
         }
 
-        public static T InsertEntity<T>(this CloudTablePool tablePool, T entity) where T: class, ITableEntity
+        public static T InsertEntity<T>(this CloudTablePool tablePool, T entity) where T : class, ITableEntity
         {
             return tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
-                var insertOp = TableOperation.Insert(entity, true);
+                var insertOp    = TableOperation.Insert(entity, true);
                 var tableResult = table.Execute(insertOp);
                 return (T) tableResult.Result;
             });
         }
 
-        public static T InsertOrMergeEntity<T>(this CloudTablePool tablePool, T entity) where T: class, ITableEntity
+        public static T InsertOrMergeEntity<T>(this CloudTablePool tablePool, T entity) where T : class, ITableEntity
         {
             return tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
-                var insertOp = TableOperation.InsertOrMerge(entity);
+                var insertOp    = TableOperation.InsertOrMerge(entity);
                 var tableResult = table.Execute(insertOp);
                 return (T) tableResult.Result;
             });
         }
 
-        public static T UpdateEntity<T>(this CloudTablePool tablePool, T entity) where T: class, ITableEntity
+        public static async Task<T> InsertOrMergeEntityAsync<T>(this CloudTablePool tablePool, T entity)
+            where T : class, ITableEntity
+        {
+            return await tablePool.Pool.ExecuteOnAvailableObject(async table =>
+            {
+                var insertOp    = TableOperation.InsertOrMerge(entity);
+                var tableResult = await table.ExecuteAsync(insertOp);
+
+                return (T) tableResult.Result;
+            });
+        }
+
+        public static T UpdateEntity<T>(this CloudTablePool tablePool, T entity) where T : class, ITableEntity
         {
             return tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
@@ -61,7 +74,8 @@ namespace Ruzzie.Identity.Storage.Azure
             });
         }
 
-        public static T GetEntity<T>(this CloudTablePool tablePool, string partitionKey, string rowKey) where T: ITableEntity, new()
+        public static T GetEntity<T>(this CloudTablePool tablePool, string partitionKey, string rowKey)
+            where T : ITableEntity, new()
         {
             return tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
@@ -78,12 +92,15 @@ namespace Ruzzie.Identity.Storage.Azure
         {
             tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
-                table.Execute(TableOperation.Delete(new DynamicTableEntity(partitionKey, rowKey, "*", new Dictionary<string, EntityProperty>())));
+                table.Execute(TableOperation.Delete(new DynamicTableEntity(partitionKey, rowKey, "*",
+                                                                           new Dictionary<string, EntityProperty>())));
                 return true;
             });
         }
 
-        public static ReadOnlyCollection<T> GetAllEntitiesInPartition<T>(this CloudTablePool tablePool, string partitionKey) where T: ITableEntity, new()
+        public static ReadOnlyCollection<T> GetAllEntitiesInPartition<T>(
+            this CloudTablePool tablePool,
+            string              partitionKey) where T : ITableEntity, new()
         {
             return tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
