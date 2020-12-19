@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Ruzzie.FuzzyStrings;
 
 namespace Ruzzie.Identity.Storage.Azure
-{
+{//todo: move to ruzzie.common.azure.storage or something
     public static class KeyGenerators
     {
         public static readonly IReadOnlyList<string> AllAlphaNumericPartitions = new[]
