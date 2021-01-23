@@ -214,7 +214,14 @@ namespace Ruzzie.Common.Security
 
         }
 
-        private static byte[] EncryptBytes(byte[] bytesToEncrypt, byte[] keyOne, byte[] keyTwo)
+        /// <summary>
+        /// Encrypt given bytes with a composite key
+        /// </summary>
+        /// <param name="bytesToEncrypt"></param>
+        /// <param name="keyOne"></param>
+        /// <param name="keyTwo"></param>
+        /// <returns></returns>
+        public static byte[] EncryptBytes(byte[] bytesToEncrypt, byte[] keyOne, byte[] keyTwo)
         {
             using (var t = CreateEncryptionAlgorithm(keyOne, keyTwo))
             {
