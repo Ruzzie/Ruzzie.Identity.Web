@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Table;
 using Ruzzie.Azure.Storage;
 
@@ -57,7 +58,7 @@ namespace Ruzzie.Identity.Storage.Azure
             return tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
                 var insertOp    = TableOperation.InsertOrReplace(entity);
-                var tableResult = table.Execute(insertOp);
+                var tableResult = table.Execute(insertOp, new TableRequestOptions{ConsistencyLevel = ConsistencyLevel.Session});
                 return (T) tableResult.Result;
             });
         }

@@ -13,7 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="MessagePack" Version="2.1.115" />
-        <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.7" />
+        <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
         <PackageReference Include="Ruzzie.Azure.Storage" Version="5.1.0.28" />
         <PackageReference Include="Ruzzie.Common" Version="4.1.0.84" />
