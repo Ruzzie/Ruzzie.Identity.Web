@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
 using Ruzzie.Azure.Storage;
@@ -46,6 +47,16 @@ namespace Ruzzie.Identity.Storage.Azure
             return tablePool.Pool.ExecuteOnAvailableObject(table =>
             {
                 var insertOp    = TableOperation.InsertOrMerge(entity);
+                var tableResult = table.Execute(insertOp);
+                return (T) tableResult.Result;
+            });
+        }
+
+        public static T InsertOrReplaceEntity<T>(this CloudTablePool tablePool, T entity) where T : class, ITableEntity
+        {
+            return tablePool.Pool.ExecuteOnAvailableObject(table =>
+            {
+                var insertOp    = TableOperation.InsertOrReplace(entity);
                 var tableResult = table.Execute(insertOp);
                 return (T) tableResult.Result;
             });
