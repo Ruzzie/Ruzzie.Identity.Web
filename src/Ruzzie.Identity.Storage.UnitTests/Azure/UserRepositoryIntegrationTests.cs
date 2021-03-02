@@ -24,8 +24,9 @@ namespace Ruzzie.Identity.Storage.UnitTests.Azure
             var connString = config.GetConnectionString("AzureStorage");
 
             _testTableName = nameof(UserRepositoryIntegrationTests);
-            _repository = new UserRepository(new CloudTablePool(_testTableName,
-                CloudStorageAccount.Parse(connString)));
+            _repository =
+                new UserRepository(new CloudTablePool(_testTableName,
+                                                      CloudStorageAccount.Parse(connString).CreateCloudTableClient()));
         }
 
         public static string CreateUniqueEmailForTest(string testName)

@@ -13,12 +13,11 @@ namespace Ruzzie.Identity.Storage.UnitTests.Azure
 
         protected override IOrganisationRepository CreateOrgRepository(CloudStorageAccount cloudStorageAccount)
         {
-            return new OrganisationRepository(
-                new CloudTablePool(TestTablesPrefixName, cloudStorageAccount),
-                new CloudTablePool(TestTablesPrefixName + "userOrg", cloudStorageAccount),
-                new CloudTablePool(TestTablesPrefixName + "orgUser", cloudStorageAccount),
-                new CloudTablePool(TestTablesPrefixName + "Invites", cloudStorageAccount)
-            );
+            var cloudTableClient = cloudStorageAccount.CreateCloudTableClient();
+            return new OrganisationRepository(new CloudTablePool(TestTablesPrefixName,             cloudTableClient),
+                                              new CloudTablePool(TestTablesPrefixName + "userOrg", cloudTableClient),
+                                              new CloudTablePool(TestTablesPrefixName + "orgUser", cloudTableClient),
+                                              new CloudTablePool(TestTablesPrefixName + "Invites", cloudTableClient));
         }
     }
 }
