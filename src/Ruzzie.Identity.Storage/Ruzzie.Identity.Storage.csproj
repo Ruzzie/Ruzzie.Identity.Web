@@ -17,7 +17,7 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
         <PackageReference Include="Ruzzie.Azure.Storage" Version="6.0.0.31" />
         <PackageReference Include="Ruzzie.Common" Version="4.2.0.85" />
-        <PackageReference Include="Ruzzie.FuzzyStrings" Version="5.0.0.49" />
+        <PackageReference Include="Ruzzie.FuzzyStrings" Version="6.0.0.50" />
     </ItemGroup>
 
 </Project>
