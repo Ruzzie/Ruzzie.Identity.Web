@@ -1,4 +1,5 @@
 ﻿namespace Ruzzie.Identity.Web
+
 open Ruzzie.Common.Security
 
 module Security =
