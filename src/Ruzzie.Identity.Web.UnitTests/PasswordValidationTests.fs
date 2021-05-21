@@ -11,10 +11,10 @@ open NUnit.Framework
 [<TestCase("adIsDeBeste!", "Ad@test.com", "Ad", "Test", false)>]
 [<TestCase("ik houd van test badminton!", "Ad@test.com", "Ad", "Test", false)>]
 [<TestCase("ik houd van test tennis!", "Ad@test.com", "Ad", "Test", false)>]
+[<TestCase("Abracad1%", "Ad@test.com", "Ad", "Test", false)>]
+[<TestCase("Abracada1%", "Henk@test.com", "Henk", "Test", true)>]
 let ``create passwords `` password email firstname lastname (isOk:bool) =
     let createRes = PasswordValue.create password None email firstname lastname
     match createRes with
     |Ok _ -> isOk.Should().BeTrue(null) |> ignore
     |Error e -> isOk.Should().BeFalse(e.ToString()) |> ignore
-
-//todo create test for Paul12345@ and validate the correct error message

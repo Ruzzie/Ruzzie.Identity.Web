@@ -150,7 +150,7 @@ module DomainTypes =
             | _ -> Ok(requiredStr)
 
         let containsOnlyDigits str = String.forall Char.IsNumber str
-        let containsAnySymbol str = not (String.exists Char.IsLetterOrDigit str)
+        let containsAnySymbol str =  (String.exists (fun c -> not (Char.IsLetterOrDigit(c))) str)
         let containsMixedCase str = (String.exists Char.IsLower str) && (String.exists Char.IsUpper str)
         let containsAnyNumber str = String.exists Char.IsNumber str
 
