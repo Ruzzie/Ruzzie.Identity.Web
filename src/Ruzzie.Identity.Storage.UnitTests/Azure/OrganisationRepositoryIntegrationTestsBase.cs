@@ -29,7 +29,6 @@ namespace Ruzzie.Identity.Storage.UnitTests.Azure
             var connString = config.GetConnectionString("AzureStorage");
 
             var cloudStorageAccount = CloudStorageAccount.Parse(connString);
-            CreateOrgRepository(cloudStorageAccount);
             Repository = CreateOrgRepository(cloudStorageAccount);
         }
 
@@ -309,5 +308,7 @@ namespace Ruzzie.Identity.Storage.UnitTests.Azure
         {
             Repository.GetAllOrganisationIds().Should().HaveCountGreaterThan(0);
         }
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using MessagePack;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace Ruzzie.Identity.Storage.Azure.Entities
@@ -48,6 +49,7 @@ namespace Ruzzie.Identity.Storage.Azure.Entities
 
         //For Serialization / Deserialization purposes
         // ReSharper disable once UnusedMember.Global
+        [SerializationConstructor]
         public Organisation()
         {
 
