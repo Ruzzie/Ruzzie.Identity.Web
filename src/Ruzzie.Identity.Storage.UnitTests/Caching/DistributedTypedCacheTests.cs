@@ -183,6 +183,13 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
             _cache.Get<Organisation>(key.Get).Should().BeNull();
         }
 
+        [FsCheck.NUnit.Property]
+        public void RemoveNonExistentKeysNoErrors(NonEmptyString key)
+        {
+            //Arrange & Act
+            _cache.Remove(key.Get);
+        }
+
         [Test]
         public async Task GetAndRemoveAsyncSuccess()
         {
