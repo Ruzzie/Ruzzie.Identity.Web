@@ -36,14 +36,12 @@ namespace Ruzzie.Identity.Storage.Azure
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(organisationName));
             }
 
-            var partitionKey = string.Empty;
-            var rowKey = string.Empty;
+            var partitionKey = "";
+            var rowKey = default(KeyGenerators.AlphaNumericKey);
 
             try
             {
-                rowKey = organisationName.CreateAlphaNumericKey(
-                    KeyGenerators.AlphaNumericKeyGenOptions.TrimInput |
-                    KeyGenerators.AlphaNumericKeyGenOptions.PreserveSpacesAsDashes);
+                rowKey = organisationName.CreateAlphaNumericKey(Organisation.AlphaNumericKeyGenOptions);
 
                 partitionKey = rowKey.CalculatePartitionKeyForAlphaNumericRowKey();
 
@@ -91,8 +89,8 @@ namespace Ruzzie.Identity.Storage.Azure
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(role));
             }
 
-            var partitionKey = string.Empty;
-            var rowKey = string.Empty;
+            var partitionKey = "";
+            var rowKey = "";
 
             //1: Add to user_organisation table
             try
@@ -110,8 +108,8 @@ namespace Ruzzie.Identity.Storage.Azure
                     e);
             }
 
-            partitionKey = string.Empty;
-            rowKey = string.Empty;
+            partitionKey = "";
+            rowKey = "";
             //2: Add to organisation_user table
             try
             {
@@ -141,8 +139,8 @@ namespace Ruzzie.Identity.Storage.Azure
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(organisationId));
             }
 
-            var partitionKey = string.Empty;
-            var rowKey = string.Empty;
+            var partitionKey = "";
+            var rowKey = "";
 
             //1: Delete from user_org
             try
@@ -185,11 +183,11 @@ namespace Ruzzie.Identity.Storage.Azure
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(organisationId));
             }
 
-            var partitionKey = string.Empty;
+            var partitionKey = "";
 
             try
             {
-                partitionKey = organisationId.CalculatePartitionKeyForAlphaNumericRowKey();
+                partitionKey = organisationId.CreateAlphaNumericPartitionKey().ToString();
                 return _organisationTable.GetEntity<Organisation>(partitionKey, organisationId);
             }
             catch (Exception e)
@@ -205,11 +203,11 @@ namespace Ruzzie.Identity.Storage.Azure
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(organisationId));
             }
 
-            var partitionKey = string.Empty;
+            var partitionKey = "";
 
             try
             {
-                partitionKey = organisationId.CalculatePartitionKeyForAlphaNumericRowKey();
+                partitionKey = organisationId.CreateAlphaNumericPartitionKey(Organisation.AlphaNumericKeyGenOptions).ToString();
                 _organisationTable.Delete(partitionKey, organisationId);
 
                 var usersForOrganisation = GetUsersForOrganisation(organisationId);

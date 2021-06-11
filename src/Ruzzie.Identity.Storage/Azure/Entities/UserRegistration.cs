@@ -1,5 +1,10 @@
 ﻿using System;
 using Microsoft.Azure.Cosmos.Table;
+using Ruzzie.Azure.Storage;
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Ruzzie.Identity.Storage.Azure.Entities
 {

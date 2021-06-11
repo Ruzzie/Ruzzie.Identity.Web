@@ -1,11 +1,16 @@
 ﻿using System;
 using MessagePack;
 using Microsoft.Azure.Cosmos.Table;
+using Ruzzie.Azure.Storage;
 
 namespace Ruzzie.Identity.Storage.Azure.Entities
 {
     public class Organisation : TableEntity
     {
+        public static readonly KeyGenerators.AlphaNumericKeyGenOptions AlphaNumericKeyGenOptions = KeyGenerators.AlphaNumericKeyGenOptions.TrimInput |
+            KeyGenerators.AlphaNumericKeyGenOptions
+                         .PreserveSpacesAsDashes;
+
         public string? CompanyName { get; set; }
 
         [IgnoreProperty]
@@ -35,16 +40,15 @@ namespace Ruzzie.Identity.Storage.Azure.Entities
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(createdByUserId));
             }
 
-            OrganisationName = organisationName;
-            CompanyName = organisationName;
-            CreatedByUserId = createdByUserId;
-            CreationDateTimeUtc = creationDateTimeUtc;
+            OrganisationName        = organisationName;
+            CompanyName             = organisationName;
+            CreatedByUserId         = createdByUserId;
+            CreationDateTimeUtc     = creationDateTimeUtc;
             LastModifiedDateTimeUtc = lastModifiedDateTimeUtc ?? creationDateTimeUtc;
 
-            RowKey = organisationName.CreateAlphaNumericKey(KeyGenerators.AlphaNumericKeyGenOptions.TrimInput |
-                                                            KeyGenerators.AlphaNumericKeyGenOptions
-                                                                .PreserveSpacesAsDashes);
-            PartitionKey = RowKey.CalculatePartitionKeyForAlphaNumericRowKey();
+            var alphaNumericKey = organisationName.CreateAlphaNumericKey(AlphaNumericKeyGenOptions);
+            RowKey       = alphaNumericKey;
+            PartitionKey = alphaNumericKey.CalculatePartitionKeyForAlphaNumericRowKey();
         }
 
         //For Serialization / Deserialization purposes

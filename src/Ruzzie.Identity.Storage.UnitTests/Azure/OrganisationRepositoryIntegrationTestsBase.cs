@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
+using Ruzzie.Azure.Storage;
 using Ruzzie.Identity.Storage.Azure;
 using Ruzzie.Identity.Storage.Azure.Entities;
 
