@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace Ruzzie.Identity.Storage.Caching
+namespace Ruzzie.Extensions.Caching
 {
     /// <summary>
     /// A Distributed cache with given default KeyPrefix and default <see cref="DistributedCacheEntryOptions"/> that uses the <see cref="IDistributedCache"/> for storage.

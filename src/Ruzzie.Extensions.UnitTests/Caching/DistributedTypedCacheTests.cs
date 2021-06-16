@@ -7,10 +7,9 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
-using Ruzzie.Identity.Storage.Azure.Entities;
-using Ruzzie.Identity.Storage.Caching;
+using Ruzzie.Extensions.Caching;
 
-namespace Ruzzie.Identity.Storage.UnitTests.Caching
+namespace Ruzzie.Extensions.UnitTests.Caching
 {
     [TestFixture]
     public class DistributedTypedCacheTests
@@ -41,8 +40,8 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
         public void GetOrAddPropertyTest(NonEmptyString key)
         {
             //Arrange
-            var entryToAdd = new Organisation("Org", "GetOrAddPropertyTest", DateTimeOffset.UtcNow,
-                                              DateTimeOffset.UtcNow);
+            var entryToAdd = new DataToCache("Org", "GetOrAddPropertyTest", DateTimeOffset.UtcNow,
+                                             DateTimeOffset.UtcNow);
 
             //Act
             var entryFromCache = _cache.GetOrAdd($"{nameof(GetOrAddPropertyTest)}{key.Get}", _ => entryToAdd);
@@ -50,7 +49,7 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
             //Assert
             entryFromCache.Should().BeEquivalentTo(entryToAdd);
             entryFromCache.Should()
-                          .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedDateTimeUtc));
+                          .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedAt));
         }
 
 
@@ -58,36 +57,36 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
         public void SetGetPropertyTest(NonEmptyString key)
         {
             //Arrange
-            var entryToAdd = new Organisation("Org", "SetGetPropertyTest", DateTimeOffset.UtcNow,
-                                              DateTimeOffset.UtcNow);
+            var entryToAdd = new DataToCache("Org", "SetGetPropertyTest", DateTimeOffset.UtcNow,
+                                             DateTimeOffset.UtcNow);
             var cacheKey = $"{nameof(SetGetPropertyTest)}{key.Get}";
 
             //Act
             _cache.Set(cacheKey, entryToAdd);
-            var entryFromCache = _cache.Get<Organisation>(cacheKey);
+            var entryFromCache = _cache.Get<DataToCache>(cacheKey);
 
             //Assert
             // ignore the last modification datetime, since the same key could be added twice, and thus the timestamp can differ.
             entryFromCache.Should()
-                          .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedDateTimeUtc));
+                          .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedAt));
         }
 
         [FsCheck.NUnit.Property]
         public void SetGetAsyncPropertyTest(NonEmptyString key)
         {
             //Arrange
-            var entryToAdd = new Organisation("Org", "SetGetAsyncPropertyTest", DateTimeOffset.UtcNow,
-                                              DateTimeOffset.UtcNow);
+            var entryToAdd = new DataToCache("Org", "SetGetAsyncPropertyTest", DateTimeOffset.UtcNow,
+                                             DateTimeOffset.UtcNow);
 
             var cacheKey = $"{nameof(SetGetAsyncPropertyTest)}{key.Get}";
 
             //Act
             _cache.SetAsync(cacheKey, entryToAdd).GetAwaiter().GetResult();
-            var entryFromCache = _cache.GetAsync<Organisation>(cacheKey).GetAwaiter().GetResult();
+            var entryFromCache = _cache.GetAsync<DataToCache>(cacheKey).GetAwaiter().GetResult();
 
             //Assert
             entryFromCache.Should()
-                          .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedDateTimeUtc));
+                          .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedAt));
         }
 
         [Test]
@@ -95,7 +94,7 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
         {
             //Arrange
             var entryToAdd =
-                new Organisation("Org", "GetOrAddAddsSuccess", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
+                new DataToCache("Org", "GetOrAddAddsSuccess", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
             //Act
             var entryFromCache = _cache.GetOrAdd(nameof(GetOrAddAddsSuccess), _ => entryToAdd);
 
@@ -107,8 +106,8 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
         public async Task GetOrAddAddsAsyncSuccess()
         {
             //Arrange
-            var entryToAdd = new Organisation("Org", "GetOrAddAddsAsyncSuccess", DateTimeOffset.UtcNow,
-                                              DateTimeOffset.UtcNow);
+            var entryToAdd = new DataToCache("Org", "GetOrAddAddsAsyncSuccess", DateTimeOffset.UtcNow,
+                                             DateTimeOffset.UtcNow);
 
             //Act
             var entryFromCache =
@@ -124,7 +123,7 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
             //Arrange
             int timesCalled = 0;
             var entryToAdd =
-                new Organisation("Org", "GetOrAddGetsSuccess", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
+                new DataToCache("Org", "GetOrAddGetsSuccess", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
 
             _cache.GetOrAdd(nameof(GetOrAddGetsSuccess),
                             _ =>
@@ -153,16 +152,16 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
             //Arrange
             var entryFromCache =
                 _cache.GetOrAdd(nameof(GetAndRemoveSuccess),
-                                _ => new Organisation("Org", "TestUser", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow));
+                                _ => new DataToCache("Org", "TestUser", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow));
 
             //precondition check
-            _cache.Get<Organisation>(nameof(GetAndRemoveSuccess)).Should().BeEquivalentTo(entryFromCache);
+            _cache.Get<DataToCache>(nameof(GetAndRemoveSuccess)).Should().BeEquivalentTo(entryFromCache);
 
             //Act
             _cache.Remove(nameof(GetAndRemoveSuccess));
 
             //Assert
-            _cache.Get<Organisation>(nameof(GetAndRemoveSuccess)).Should().BeNull();
+            _cache.Get<DataToCache>(nameof(GetAndRemoveSuccess)).Should().BeNull();
         }
 
         [FsCheck.NUnit.Property]
@@ -171,16 +170,16 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
             //Arrange
             var entryFromCache =
                 _cache.GetOrAdd(key.Get,
-                                _ => new Organisation("Org", "TestUser", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow));
+                                _ => new DataToCache("Org", "TestUser", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow));
 
             //precondition check
-            _cache.Get<Organisation>(key.Get).Should().BeEquivalentTo(entryFromCache);
+            _cache.Get<DataToCache>(key.Get).Should().BeEquivalentTo(entryFromCache);
 
             //Act
             _cache.Remove(key.Get);
 
             //Assert
-            _cache.Get<Organisation>(key.Get).Should().BeNull();
+            _cache.Get<DataToCache>(key.Get).Should().BeNull();
         }
 
         [FsCheck.NUnit.Property]
@@ -196,16 +195,32 @@ namespace Ruzzie.Identity.Storage.UnitTests.Caching
             //Arrange
             var entryFromCache =
                 _cache.GetOrAdd(nameof(GetAndRemoveSuccess),
-                                _ => new Organisation("Org", "TestUser", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow));
+                                _ => new DataToCache("Org", "TestUser", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow));
 
             //precondition check
-            (await _cache.GetAsync<Organisation>(nameof(GetAndRemoveSuccess))).Should().BeEquivalentTo(entryFromCache);
+            (await _cache.GetAsync<DataToCache>(nameof(GetAndRemoveSuccess))).Should().BeEquivalentTo(entryFromCache);
 
             //Act
             await _cache.RemoveAsync(nameof(GetAndRemoveSuccess));
 
             //Assert
-            (await _cache.GetAsync<Organisation>(nameof(GetAndRemoveSuccess))).Should().BeNull();
+            (await _cache.GetAsync<DataToCache>(nameof(GetAndRemoveSuccess))).Should().BeNull();
+        }
+    }
+
+    public class DataToCache
+    {
+        public string         Id             { get; }
+        public string         Name           { get; }
+        public DateTimeOffset CreatedAt      { get; }
+        public DateTimeOffset LastModifiedAt { get; }
+
+        public DataToCache(string id, string name, DateTimeOffset createdAt, DateTimeOffset lastModifiedAt)
+        {
+            Id             = id;
+            Name           = name;
+            CreatedAt      = createdAt;
+            LastModifiedAt = lastModifiedAt;
         }
     }
 }

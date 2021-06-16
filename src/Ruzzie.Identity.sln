@@ -1,9 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Validation", "Ruzzie.Common.Validation\Ruzzie.Common.Validation.csproj", "{726A6A40-B209-4F21-B9E0-1585FD3065AD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Validation.UnitTests", "Ruzzie.Common.Validation.UnitTests\Ruzzie.Common.Validation.UnitTests.csproj", "{E93D6FA4-E6A9-4108-9654-3B557EB1304F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Identity.Storage", "Ruzzie.Identity.Storage\Ruzzie.Identity.Storage.csproj", "{6F40392C-CC04-4485-A1EA-7E3F629421AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Identity.Storage.UnitTests", "Ruzzie.Identity.Storage.UnitTests\Ruzzie.Identity.Storage.UnitTests.csproj", "{C522BD8D-130B-4083-A1CC-E54AEEABA4D7}"
@@ -12,20 +8,16 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ruzzie.Identity.Web", "Ruzz
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ruzzie.Identity.Web.UnitTests", "Ruzzie.Identity.Web.UnitTests\Ruzzie.Identity.Web.UnitTests.fsproj", "{913BF11B-EBB4-43D6-8A40-F82F15C427DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Extensions", "Ruzzie.Extensions\Ruzzie.Extensions.csproj", "{FE5A836F-75F0-40D7-96C2-ADA8C8A12115}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Extensions.UnitTests", "Ruzzie.Extensions.UnitTests\Ruzzie.Extensions.UnitTests.csproj", "{A6ECF37F-D060-4A7C-9E79-B3522296631A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{726A6A40-B209-4F21-B9E0-1585FD3065AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{726A6A40-B209-4F21-B9E0-1585FD3065AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{726A6A40-B209-4F21-B9E0-1585FD3065AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{726A6A40-B209-4F21-B9E0-1585FD3065AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E93D6FA4-E6A9-4108-9654-3B557EB1304F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E93D6FA4-E6A9-4108-9654-3B557EB1304F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E93D6FA4-E6A9-4108-9654-3B557EB1304F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E93D6FA4-E6A9-4108-9654-3B557EB1304F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6F40392C-CC04-4485-A1EA-7E3F629421AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6F40392C-CC04-4485-A1EA-7E3F629421AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F40392C-CC04-4485-A1EA-7E3F629421AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -42,5 +34,13 @@ Global
 		{913BF11B-EBB4-43D6-8A40-F82F15C427DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{913BF11B-EBB4-43D6-8A40-F82F15C427DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{913BF11B-EBB4-43D6-8A40-F82F15C427DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE5A836F-75F0-40D7-96C2-ADA8C8A12115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE5A836F-75F0-40D7-96C2-ADA8C8A12115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE5A836F-75F0-40D7-96C2-ADA8C8A12115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE5A836F-75F0-40D7-96C2-ADA8C8A12115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6ECF37F-D060-4A7C-9E79-B3522296631A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6ECF37F-D060-4A7C-9E79-B3522296631A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6ECF37F-D060-4A7C-9E79-B3522296631A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6ECF37F-D060-4A7C-9E79-B3522296631A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

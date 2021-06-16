@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>9</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Ruzzie.Common" Version="5.1.0.92" />
+        <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+        <PackageReference Include="MessagePack" Version="2.2.85" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
+    </ItemGroup>
+
+</Project>

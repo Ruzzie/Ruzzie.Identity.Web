@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace Ruzzie.Identity.Storage.Caching
+namespace Ruzzie.Extensions.Caching
 {
     public interface ITypedCache
     {

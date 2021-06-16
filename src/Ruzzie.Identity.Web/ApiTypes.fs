@@ -1,6 +1,6 @@
 ﻿namespace Ruzzie.Identity.Web.ApiTypes
 open System.ComponentModel.DataAnnotations
-open Ruzzie.Common.Validation
+open Ruzzie.Extensions.Validation
 open Ruzzie.Identity.Web
 
 //TODO: Should this type be in DomainTypes?

@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
         <Description>Storage interfaces and implementations for identity management</Description>
-        <Copyright>Copyright © Dorus Verhoeckx 2020</Copyright>
+        <Copyright>Copyright © Dorus Verhoeckx 2021</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <Authors>Dorus Verhoeckx</Authors>
         <PackageVersion>0.0.0.1</PackageVersion>
@@ -13,12 +13,15 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="MessagePack" Version="2.2.85" />
+        
         <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
         <PackageReference Include="Ruzzie.Azure.Storage" Version="7.1.0.36" />
-        <PackageReference Include="Ruzzie.Common" Version="5.0.0.90" />
+        <PackageReference Include="Ruzzie.Common" Version="5.1.0.92" />
         <PackageReference Include="Ruzzie.FuzzyStrings" Version="7.0.0.51" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Ruzzie.Extensions\Ruzzie.Extensions.csproj" />
     </ItemGroup>
 
 </Project>
