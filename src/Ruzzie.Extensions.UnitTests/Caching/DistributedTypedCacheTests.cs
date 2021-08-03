@@ -29,7 +29,7 @@ namespace Ruzzie.Extensions.UnitTests.Caching
 
             _cache = new DistributedTypedCache(distributedCacheForTest,
                                                nameof(DistributedTypedCacheTests),
-                                               new DistributedCacheEntryOptions()
+                                               new DistributedCacheEntryOptions
                                                {
                                                    AbsoluteExpirationRelativeToNow =
                                                        TimeSpan.FromSeconds(2)
@@ -47,7 +47,6 @@ namespace Ruzzie.Extensions.UnitTests.Caching
             var entryFromCache = _cache.GetOrAdd($"{nameof(GetOrAddPropertyTest)}{key.Get}", _ => entryToAdd);
 
             //Assert
-            entryFromCache.Should().BeEquivalentTo(entryToAdd);
             entryFromCache.Should()
                           .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedAt));
         }
