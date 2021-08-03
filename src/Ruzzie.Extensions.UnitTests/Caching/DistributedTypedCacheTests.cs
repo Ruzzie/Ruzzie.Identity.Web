@@ -40,15 +40,17 @@ namespace Ruzzie.Extensions.UnitTests.Caching
         public void GetOrAddPropertyTest(NonEmptyString key)
         {
             //Arrange
-            var entryToAdd = new DataToCache("Org", "GetOrAddPropertyTest", DateTimeOffset.UtcNow,
-                                             DateTimeOffset.UtcNow);
+            var entryToAdd =
+                new DataToCache("Org", "GetOrAddPropertyTest", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
 
             //Act
             var entryFromCache = _cache.GetOrAdd($"{nameof(GetOrAddPropertyTest)}{key.Get}", _ => entryToAdd);
 
             //Assert
             entryFromCache.Should()
-                          .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedAt));
+                          .BeEquivalentTo(entryToAdd
+                                        , options => options.Excluding(x => x.LastModifiedAt)
+                                                            .Excluding(x => x.CreatedAt));
         }
 
 
