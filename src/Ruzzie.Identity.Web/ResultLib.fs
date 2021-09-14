@@ -67,6 +67,9 @@ module ResultLib =
     /// Infix operator to join 2 Ok results when both are Ok. Returns the first (left) Error otherwise.
     let (.<|>.) = joinOk
 
+    ///AndThen Join Ok
+    /// executes a function when the given result is Ok
+    /// and returns the Ok result of the function and the given Result as a tuple
     let andThenJoinOk firstResult andThenFunc =
         match firstResult with
         | Ok f ->
@@ -75,6 +78,10 @@ module ResultLib =
             |Error err -> Error err
         | Error err ->
             Error err
+
+    ///AndThen Join Ok
+    /// executes a function when the given result is Ok
+    /// and returns the Ok result of the function and the given Result as a tuple
     let (.=>.) = andThenJoinOk
 
     let (>=>) f1 f2 arg =
