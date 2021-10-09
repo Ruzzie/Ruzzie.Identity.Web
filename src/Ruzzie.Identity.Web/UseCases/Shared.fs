@@ -31,7 +31,7 @@ module Shared =
             Error
                 (ErrorKind.CannotBeEmpty
                     ((Some
-                        { ErrInfo.FieldName = Some "email"
+                        { ErrInfo.FieldName = "email"
                           ErrInfo.Details = None })))
         else
             try
@@ -65,5 +65,5 @@ module Shared =
             let userId = user.Identity.Name
             (EmailAddressValue.create userId
                  (Some
-                     { DomainTypes.ErrInfo.FieldName = Some "email"
+                     { DomainTypes.ErrInfo.FieldName = "email"
                        DomainTypes.ErrInfo.Details = None }))

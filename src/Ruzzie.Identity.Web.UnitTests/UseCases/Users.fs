@@ -248,7 +248,7 @@ let ``authentication failed invalid password`` () =
     | Ok _ -> Assert.Fail("Expected error") |> ignore
     | Error errors ->
         match (List.head errors) with
-        | Invalid e -> e.Value.FieldName.Value.Should().Be("password", null) |> ignore
+        | Invalid e -> e.Value.FieldName.Should().Be("password", null) |> ignore
         | _ -> Assert.Fail("Expected Other errorType")
     |> ignore
 

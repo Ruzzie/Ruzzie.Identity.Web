@@ -37,25 +37,25 @@ module Validation =
             let emailResult =
                 DomainTypes.EmailAddressValue.create input.email
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "email"
+                        { DomainTypes.ErrInfo.FieldName = "email"
                           DomainTypes.ErrInfo.Details = None })
 
             let firstNameResult =
                 DomainTypes.StringRequiredValue.create input.firstname
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "firstname"
+                        { DomainTypes.ErrInfo.FieldName = "firstname"
                           DomainTypes.ErrInfo.Details = None })
 
             let lastNameResult =
                 DomainTypes.StringRequiredValue.create input.lastname
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "lastname"
+                        { DomainTypes.ErrInfo.FieldName = "lastname"
                           DomainTypes.ErrInfo.Details = None })
 
             let passwordResult =
                 DomainTypes.PasswordValue.create input.password
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "password"
+                        { DomainTypes.ErrInfo.FieldName = "password"
                           DomainTypes.ErrInfo.Details = None }) input.email input.firstname input.lastname
 
             createRegisterUserRequest <!> emailResult <.*.> firstNameResult
@@ -68,19 +68,19 @@ module Validation =
             let firstNameResult =
                 DomainTypes.StringRequiredValue.create input.firstname
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "firstname"
+                        { DomainTypes.ErrInfo.FieldName = "firstname"
                           DomainTypes.ErrInfo.Details = None })
 
             let lastNameResult =
                 DomainTypes.StringRequiredValue.create input.lastname
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "lastname"
+                        { DomainTypes.ErrInfo.FieldName = "lastname"
                           DomainTypes.ErrInfo.Details = None })
 
             let passwordResult =
                 DomainTypes.PasswordValue.create input.password
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "password"
+                        { DomainTypes.ErrInfo.FieldName = "password"
                           DomainTypes.ErrInfo.Details = None }) (EmailAddressValue.value email) input.firstname input.lastname
 
             createRegisterUserRequest <!> emailResult <.*.> firstNameResult
@@ -95,13 +95,13 @@ module Validation =
             let emailResult =
                 DomainTypes.EmailAddressValue.create input.email
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "email"
+                        { DomainTypes.ErrInfo.FieldName = "email"
                           DomainTypes.ErrInfo.Details = None })
 
             let passwordResult =
                 DomainTypes.PasswordValue.create input.password
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "password"
+                        { DomainTypes.ErrInfo.FieldName = "password"
                           DomainTypes.ErrInfo.Details = None }) input.email input.email input.email
 
             createAuthenticateUserRequest <!> emailResult <.*.> passwordResult
@@ -116,7 +116,7 @@ module Validation =
              let organisationNameResult =
                 DomainTypes.StringRequiredValue.create inputReq.organisationName
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "organisationName"
+                        { DomainTypes.ErrInfo.FieldName = "organisationName"
                           DomainTypes.ErrInfo.Details = None })
 
              organisationNameResult .=> (fun orgName -> Ok(createAddOrganisationRequest userId orgName))
@@ -134,13 +134,13 @@ module Validation =
             let firstNameResult =
                 DomainTypes.StringRequiredValue.create input.firstname
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "firstname"
+                        { DomainTypes.ErrInfo.FieldName = "firstname"
                           DomainTypes.ErrInfo.Details = None })
 
             let lastNameResult =
                 DomainTypes.StringRequiredValue.create input.lastname
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "lastname"
+                        { DomainTypes.ErrInfo.FieldName = "lastname"
                           DomainTypes.ErrInfo.Details = None })
 
             createUpdateUserRequest <!> userIdResult <.*.> firstNameResult
@@ -159,13 +159,13 @@ module Validation =
             let inviteeEmailResult =
                 DomainTypes.EmailAddressValue.create inviteeEmailStr
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "inviteeEmail"
+                        { DomainTypes.ErrInfo.FieldName = "inviteeEmail"
                           DomainTypes.ErrInfo.Details = None })
 
             let organisationIdResult =
                 DomainTypes.StringRequiredValue.create orgIdStr
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "organisationId"
+                        { DomainTypes.ErrInfo.FieldName = "organisationId"
                           DomainTypes.ErrInfo.Details = None })
 
             createInviteUserToOrganisationRequest <!> userIdResult <.*.> inviteeEmailResult
@@ -184,7 +184,7 @@ module Validation =
             let organisationIdResult =
                 DomainTypes.StringRequiredValue.create orgIdStr
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "organisationId"
+                        { DomainTypes.ErrInfo.FieldName = "organisationId"
                           DomainTypes.ErrInfo.Details = None })
 
             createGetAllUsersForOrganisationInputRequest <!> requestedByUserIdResult
@@ -204,13 +204,13 @@ module Validation =
              let organisationIdResult =
                 DomainTypes.StringRequiredValue.create orgIdStr
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "organisationId"
+                        { DomainTypes.ErrInfo.FieldName = "organisationId"
                           DomainTypes.ErrInfo.Details = None })
 
              let userIdResult =
                 DomainTypes.EmailAddressValue.create userIdStr
                     (Some
-                        { DomainTypes.ErrInfo.FieldName = Some "userId"
+                        { DomainTypes.ErrInfo.FieldName = "userId"
                           DomainTypes.ErrInfo.Details = None })
 
              createRequest <!> requestedByUserIdResult <.*.> userIdResult

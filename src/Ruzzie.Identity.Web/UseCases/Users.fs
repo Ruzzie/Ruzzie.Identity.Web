@@ -325,7 +325,7 @@ module Users =
                                     req.NewPasswordInput
                                     (Some
                                         {
-                                            DomainTypes.ErrInfo.FieldName = Some "newPassword"
+                                            DomainTypes.ErrInfo.FieldName = "newPassword"
                                             DomainTypes.ErrInfo.Details = None
                                         })
                                     userEntity.Email

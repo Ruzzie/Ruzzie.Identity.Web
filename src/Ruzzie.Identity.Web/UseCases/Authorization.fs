@@ -24,7 +24,7 @@ module Authorization =
         let organisationIdValidationResult =
             DomainTypes.StringRequiredValue.create organisationId
                 (Some
-                    { DomainTypes.ErrInfo.FieldName = Some "organisationId"
+                    { DomainTypes.ErrInfo.FieldName = "organisationId"
                       DomainTypes.ErrInfo.Details = None })
 
         isAuthorizedUserResult .<|>. organisationIdValidationResult .=> (fun (userId, orgId) ->

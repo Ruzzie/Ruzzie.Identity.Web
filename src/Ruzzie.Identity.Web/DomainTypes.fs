@@ -8,7 +8,7 @@ open Ruzzie.Common.Validation
 module DomainTypes =
 
     type ErrInfo =
-        { FieldName: String option //TODO MAKE NON OPTIONAL
+        { FieldName: String
           Details: String list option }
 
     type ErrorKind =
@@ -22,9 +22,9 @@ module DomainTypes =
 
     let createErrKindWithErrInfo errKind fieldName details =
         errKind
-                ((Some
-                    { ErrInfo.FieldName = Some fieldName
-                      ErrInfo.Details = Some(details) }))
+                (Some
+                   { ErrInfo.FieldName = fieldName
+                     ErrInfo.Details = Some(details) })
     let createErrorWithErrInfo errKind fieldName details  =
          Error
             (createErrKindWithErrInfo errKind fieldName details)
@@ -51,9 +51,7 @@ module DomainTypes =
     let fieldNameOrGeneric errInfoOption =
         match errInfoOption with
         | Some info ->
-            match info.FieldName with
-            | Some fieldName -> fieldName
-            | None -> "generic"
+            info.FieldName
         | None -> "generic"
 
     let addErrDetails errInfoOption detailToAdd =
@@ -63,7 +61,7 @@ module DomainTypes =
             | Some details -> { errInfo with Details = Some(detailToAdd :: details) }
             | None -> { errInfo with Details = Some(detailToAdd :: []) }
         | None ->
-            { FieldName = None
+            { FieldName = "unknown"
               Details = Some(detailToAdd :: []) }
 
     let toErrorMessage errType errInfoOption =
@@ -88,7 +86,7 @@ module DomainTypes =
         | InvalidToken errInfoOption ->
             errToStr error errInfoOption
         | Unexpected (status, message) ->
-            str ("Unexpected") ("("+status.ToString() + "): " +  message)
+            str "Unexpected" ("("+status.ToString() + "): " +  message)
         | Unauthorized ->
             str "Unauthorized" String.Empty
 
@@ -105,7 +103,7 @@ module DomainTypes =
             else if EmailValidation.IsValidEmailAddress email = false then Error(Invalid(errInfoOption))
             else Ok(regularizeValidEmailAddress (ValidEmailAddress email))
 
-        let value (emailValue) =
+        let value emailValue =
             match emailValue with
             | ValidEmailAddress s -> s
 
@@ -176,25 +174,25 @@ module DomainTypes =
 
             match value with
             | s when containsOnlyDigits s ->
-                Error(Invalid((Some(addErrDetails errInfoOption "CannotContainsOnlyNumbers"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "CannotContainsOnlyNumbers")))
             | s when value.Length < 12 && not (containsAnySymbol s) ->
-                Error(Invalid((Some(addErrDetails errInfoOption "ShortPasswordsMustContainSymbols"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "ShortPasswordsMustContainSymbols")))
             | s when value.Length < 16 && not (containsAnyNumber s) ->
-                Error(Invalid((Some(addErrDetails errInfoOption "ShortPasswordsMustContainNumbers"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "ShortPasswordsMustContainNumbers")))
             | s when value.Length < 20 && not (containsMixedCase s) ->
-                Error(Invalid((Some(addErrDetails errInfoOption "ShortPasswordsMustContainMixedCaseChars"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "ShortPasswordsMustContainMixedCaseChars")))
             | s when startsWithPartialStrWhenGtOne s forEmail ->
-                Error(Invalid((Some(addErrDetails errInfoOption "CannotStartWithSameValueAsEmail"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "CannotStartWithSameValueAsEmail")))
             | s when startsWithPartialStrWhenGtOne s forFirstname ->
-                Error(Invalid((Some(addErrDetails errInfoOption "CannotStartWithSameValueAsFirstname"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "CannotStartWithSameValueAsFirstname")))
             | s when startsWithPartialStrWhenGtOne s forLastname ->
-                Error(Invalid((Some(addErrDetails errInfoOption "CannotStartWithSameValueAsLastname"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "CannotStartWithSameValueAsLastname")))
             | s when containsPartialStrWhenGtOne s forEmail ->
-                Error(Invalid((Some(addErrDetails errInfoOption "CannotContainPartOfEmail"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "CannotContainPartOfEmail")))
             | s when containsPartialStrWhenGtOne s forFirstname ->
-                Error(Invalid((Some(addErrDetails errInfoOption "CannotContainPartOfFirstname"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "CannotContainPartOfFirstname")))
             | s when containsPartialStrWhenGtOne s forLastname ->
-                Error(Invalid((Some(addErrDetails errInfoOption "CannotContainPartOfLastname"))))
+                Error(Invalid (Some(addErrDetails errInfoOption "CannotContainPartOfLastname")))
             | _ -> Ok(T requiredStr)
 
         let create pwdStr errInfoOption forEmail forFirstname forLastname =
@@ -236,14 +234,14 @@ module DomainTypes =
                     if fields.Length <> 4 then
                         Error
                             (InvalidToken
-                                ((Some
-                                    { ErrInfo.FieldName = Some "token"
-                                      ErrInfo.Details = Some("accountValidationToken.parseError.InvalidFieldCount" :: []) })))
+                                (Some
+                                   { ErrInfo.FieldName = "token"
+                                     ErrInfo.Details = Some("accountValidationToken.parseError.InvalidFieldCount" :: []) }))
                     else
                         let email =
                             EmailAddressValue.create fields.[1]
                                 (Some
-                                    { ErrInfo.FieldName = Some "token.email"
+                                    { ErrInfo.FieldName = "token.email"
                                       ErrInfo.Details = Some("accountValidationToken.parseError.invalidEmail" :: []) })
 
                         email .=> (fun validEmail ->
@@ -260,8 +258,8 @@ module DomainTypes =
                 Error
                     (InvalidToken
                         (Some
-                            ({ ErrInfo.FieldName = Some "token"
-                               Details = Some("accountValidationToken.UnexpectedError" :: [ex.Message])})))
+                            { ErrInfo.FieldName = "token"
+                              Details = Some("accountValidationToken.UnexpectedError" :: [ex.Message])}))
 
         let createTokenLifetimeDuration tokenType =
             match tokenType with
@@ -274,7 +272,7 @@ module DomainTypes =
             let tokenId = Guid.NewGuid()//Arbitrary uniqueIsh string
             let expiresAt = tokenIssueDate.Add(createTokenLifetimeDuration tokenType).ToUnixTimeMilliseconds() //Expiry of token
             let str = sprintf "%s;;%s;;%s;;%d" (tokenId.ToString()) forEmail (expiresAt.ToString()) (tokenType |> int) //embed all relevant data to validate the token in a delimited string
-            encrypt (str)//encrypt the string; only the server knows how to encrypt and decrypt this token
+            encrypt str//encrypt the string; only the server knows how to encrypt and decrypt this token
 
     module Organisations =
 
@@ -308,20 +306,20 @@ module DomainTypes =
                     if not (fields.Length = 5) then
                         Error
                             (InvalidToken
-                                ((Some
-                                    { ErrInfo.FieldName = Some "token"
-                                      ErrInfo.Details = Some(["organisationToken.parseError.InvalidFieldCount"]) })))
+                                (Some
+                                   { ErrInfo.FieldName = "token"
+                                     ErrInfo.Details = Some(["organisationToken.parseError.InvalidFieldCount"]) }))
                     else
                         let email =
                             EmailAddressValue.create fields.[1]
                                 (Some
-                                    { ErrInfo.FieldName = Some "token.forEmail"
+                                    { ErrInfo.FieldName = "token.forEmail"
                                       ErrInfo.Details = Some(["organisationToken.parseError.invalidEmail"]) })
 
                         let orgId =
                             StringRequiredValue.create fields.[2]
                                  (Some
-                                    { ErrInfo.FieldName = Some "token.organisationId"
+                                    { ErrInfo.FieldName = "token.organisationId"
                                       ErrInfo.Details = Some(["organisationToken.parseError.invalidOrganisationId"]) })
                         email .<|>. orgId
                         .=> (fun (validEmail, validOrgId ) ->
@@ -342,8 +340,8 @@ module DomainTypes =
                 Error
                     (InvalidToken
                         (Some
-                            ({ ErrInfo.FieldName = Some "token"
-                               Details = Some("organisationToken.UnexpectedError" :: [ex.Message])})))
+                            { ErrInfo.FieldName = "token"
+                              Details = Some("organisationToken.UnexpectedError" :: [ex.Message])}))
 
 
         let generateOrganisationTokenString forEmail forOrgId (utcNow: DateTimeOffset) encryptFunc (tokenType:OrganisationTokenType) =
@@ -351,7 +349,7 @@ module DomainTypes =
             let tokenId = Guid.NewGuid()//Arbitrary uniqueIsh string
             let invitedAt = utcNow.ToUnixTimeMilliseconds() //Expiry of token
             let str = sprintf "%s;;%s;;%s;;%s;;%d" (tokenId.ToString()) forEmail forOrgId (invitedAt.ToString()) (tokenType |> int) //embed all relevant data to validate the token in a delimited string
-            encryptFunc (str)//encrypt the string; only the server knows how to encrypt and decrypt this token
+            encryptFunc str//encrypt the string; only the server knows how to encrypt and decrypt this token
 
     type AuthenticateUserRequest =
         { Email: EmailAddressValue.T

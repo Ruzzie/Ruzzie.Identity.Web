@@ -31,17 +31,17 @@ module Email =
              HtmlContent = html}
 
         create
-        <!> (StringNonEmpty.create from (Some({FieldName = Some("createSendEmailRequest.from")
+        <!> (StringNonEmpty.create from (Some({FieldName = "createSendEmailRequest.from"
                                                Details = None})))
-        <.*.> (EmailAddressValue.create ``to`` (Some({FieldName = Some("createSendEmailRequest.to")
+        <.*.> (EmailAddressValue.create ``to`` (Some({FieldName = ("createSendEmailRequest.to")
                                                       Details = None})))
         <*.> match replyTo with
-             |Some replyToStr -> (EmailAddressValue.create replyToStr (Some({FieldName = Some("createSendEmailRequest.replyTo")
+             |Some replyToStr -> (EmailAddressValue.create replyToStr (Some({FieldName = "createSendEmailRequest.replyTo"
                                                                              Details = None}))) |> Result.map (fun k -> Some k)
              |None -> Ok (None)
-        <*.> (StringNonEmpty.create subject (Some({FieldName = Some("createSendEmailRequest.subject")
+        <*.> (StringNonEmpty.create subject (Some({FieldName = "createSendEmailRequest.subject"
                                                    Details = None})))
-        <*.> (StringNonEmpty.create text (Some({FieldName = Some("createSendEmailRequest.text")
+        <*.> (StringNonEmpty.create text (Some({FieldName = "createSendEmailRequest.text"
                                                 Details = None})))
         <*.> (Ok html)
     let toErrorKindResult sendResult =
