@@ -28,3 +28,19 @@ let `` Send email IntegrationTest``() =
         | Error(status, errMsg) -> Assert.Fail(status.ToString() + " " + errMsg)
 
     | Error errors -> Assert.Fail(errors.ToString())
+
+
+[<Test>]
+let ``mailgun create rest request should succeed when reply to is NONE`` () =
+    
+    let createSendEmailRequestResult =
+        createSendEmailRequest "Link Bi <noreply@ms.pvhlink.com>" "dorus.verhoeckx+inttest@gmail.com" Option.None
+            "Integration Test" "Test text content" "Test <b>HTML</b> content"
+
+    match createSendEmailRequestResult with
+    | Ok sendRequest ->
+        let restRequest = Ruzzie.Identity.Web.Email.Mailgun.createMailGunSendEmailRestRequest sendRequest "test"
+        Assert.IsNotNull(restRequest)                
+    | Error errors -> Assert.Fail(errors.ToString())            
+    
+    
