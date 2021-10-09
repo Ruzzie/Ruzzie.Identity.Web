@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
 
         <Description>Identity and user management logic for web apps</Description>
-        <Copyright>Copyright © Dorus Verhoeckx 2020</Copyright>
+        <Copyright>Copyright © Dorus Verhoeckx 2020, 2021</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <Authors>Dorus Verhoeckx</Authors>
         <PackageVersion>0.0.0.1</PackageVersion>
