@@ -51,11 +51,15 @@ type RegisterUserResp =
 
 [<CLIMutable>]
 type UserOrganisation =
-    { id: string
+    {
+      /// the organisation id
+      id: string
+      /// the name of the organisation
       name: string
       createdByUserId: string
       createdTimestamp: int64
       lastModifiedTimestamp: int64
+      /// the role of the user in the organisation
       userRole: string
       userJoinedTimestamp: int64 }
 
@@ -69,6 +73,7 @@ type User =
       lastModifiedTimestamp: int64
       accountValidationStatus: AccountValidationStatus //todo: add toggles
       systemFeatureToggles: string List
+      /// the organisations a user is a member of
       organisations: UserOrganisation list }
 
 [<CLIMutable>] //For JSON Serialization
