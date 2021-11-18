@@ -131,7 +131,8 @@ module Users =
 
     let private createRegisterUserResponse jwtSecretKey utcNow (entity: UserRegistration) =
 
-        let jwtToken = createDefaultJWT entity.Email String.Empty utcNow jwtSecretKey
+        // a newly registered used has no organisation yet
+        let jwtToken = createJWT entity.Email "" [] [] utcNow jwtSecretKey
 
         Result.map (fun jwt ->
             {
@@ -149,7 +150,7 @@ module Users =
 
     let private createAuthenticateUserResponse jwtSecretKey utcNow (entity: UserRegistration) =
 
-        let jwtToken = createDefaultJWT entity.Email String.Empty utcNow jwtSecretKey
+        let jwtToken = createJWT entity.Email "" [] [] utcNow jwtSecretKey
 
         Result.map (fun jwt ->
             {
@@ -209,17 +210,17 @@ module Users =
         | Error e -> Error e
 
 
-    let authenticateLoginUser utcNow repository jwtSecretKey (req: AuthenticateUserRequest) =
+    let authenticateLoginUser utcNow userRepository jwtSecretKey (req: AuthenticateUserRequest) =
 
         let errorWhenUserNotExists x exists = if not (exists) then createInvalidError "password" ([]) else Ok(x)
 
         let responseRes =
             (userExist req.Email)
             >=> errorWhenUserNotExists req.Email
-            >=> getUserByEmail repository
+            >=> getUserByEmail userRepository
             >=> verifyPassword req.PasswordValue
 
-        match (responseRes repository) with
+        match (responseRes userRepository) with
         | Ok (isValidPassword, entity) ->
             if (isValidPassword) then
                 createAuthenticateUserResponse jwtSecretKey utcNow entity

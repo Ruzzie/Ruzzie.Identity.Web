@@ -15,14 +15,22 @@ module Authentication =
               Issuer: string
               Audience: string }
 
+        [<Literal>]
         let ClaimTypeOnBehalfOf = "on_behalf_of"
-        let ClaimTypeCompany = "company"
+        [<Literal>]
+        let ClaimTypeOrg = "company"//"org"
+        [<Literal>]
+        let ClaimTypeOrganisationOwner = "org_owner"
+        [<Literal>]
+        let ClaimTypeOrganisationMember = "org_member"
 
-        let claimsForUser userId userRoles company =
+        let claimsForUser userId userRoles currentOrganisation organisationsWhereOwner organisationsWhereMember =
             [Claim(ClaimTypes.Name, userId);
              Claim(JwtRegisteredClaimNames.Sub, userId);
              Claim(ClaimTypeOnBehalfOf, userId);
-             Claim(ClaimTypeCompany, company)]  //TODO: Implement this later; set default company when only 1 org
+             Claim(ClaimTypeOrg, currentOrganisation)]
+            @ List.map (fun orgKey -> Claim(ClaimTypeOrganisationOwner, orgKey)) organisationsWhereOwner
+            @ List.map (fun orgKey -> Claim(ClaimTypeOrganisationMember, orgKey)) organisationsWhereMember
             @ List.map (fun role -> Claim(ClaimTypes.Role, role)) userRoles
 
         let toClaimsIdentity (claims: Claim list) = ClaimsIdentity(claims)
@@ -31,10 +39,10 @@ module Authentication =
             let securityKey = SymmetricSecurityKey(secretKey)
             SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
 
-        let generateJWTForUser userId userRoles company (utcNow:DateTimeOffset) jwtConfig =
+        let generateJWTForUser userId userRoles currentOrganisation orgKeysWhereOwner orgKeysWhereMember (utcNow:DateTimeOffset) jwtConfig =
             let tokenDescriptor =
                 SecurityTokenDescriptor
-                    (Subject = (toClaimsIdentity <| claimsForUser userId userRoles company),
+                    (Subject = (toClaimsIdentity <| claimsForUser userId userRoles currentOrganisation orgKeysWhereOwner orgKeysWhereMember),
                      Expires = Nullable(utcNow.UtcDateTime.AddMinutes(jwtConfig.ExpirationInMinutes |> float)),
                      Issuer = jwtConfig.Issuer, Audience = jwtConfig.Audience,
                      SigningCredentials = credentialsFor (Encoding.UTF8.GetBytes(jwtConfig.Secret)))

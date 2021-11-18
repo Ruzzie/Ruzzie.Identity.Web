@@ -26,7 +26,7 @@ module Shared =
             CreateInviteUserToOrganisationEmail: ApiTypes.User -> ApiTypes.UserOrganisation -> string -> string -> Result<SendEmailRequest, ErrorKind list>
         }
 
-    let createDefaultJWT email company utcNow jwtConfig =
+    let createJWT email currentOrgKey orgKeysWhereOwner orgKeysWhereMember utcNow jwtConfig =
         if String.IsNullOrWhiteSpace(email) then
             Error
                 (ErrorKind.CannotBeEmpty
@@ -36,7 +36,7 @@ module Shared =
         else
             try
                 let genJwt =
-                    Authentication.JWT.generateJWTForUser email ("User" :: []) company utcNow jwtConfig
+                    Authentication.JWT.generateJWTForUser email ("User" :: []) currentOrgKey orgKeysWhereOwner orgKeysWhereMember utcNow jwtConfig
                 Ok(genJwt)
             with ex -> createInvalidErrorWithExn "email" "createDefaultJWT.unexpectedError" ex
 

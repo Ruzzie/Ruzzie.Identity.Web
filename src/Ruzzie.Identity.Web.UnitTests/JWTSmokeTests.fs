@@ -24,7 +24,7 @@ let SmokeTest() =
           Audience = "testa" }
 
     let jwt =
-        JWT.generateJWTForUser "101" ("DefaultRole" :: []) "PVH" DateTimeOffset.UtcNow config
+        JWT.generateJWTForUser "101" ["DefaultRole" ; "Reader"] "PVH" ["PVH"] ["PVH"] DateTimeOffset.UtcNow config
     jwt.Should().NotBeEmpty(null) |> ignore
 
 [<Test>]
