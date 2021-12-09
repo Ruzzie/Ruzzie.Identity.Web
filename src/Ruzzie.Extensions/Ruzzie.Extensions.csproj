@@ -3,14 +3,14 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
-        <LangVersion>9</LangVersion>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Ruzzie.Common" Version="5.2.0.94" />
         <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
-        <PackageReference Include="MessagePack" Version="2.2.85" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
+        <PackageReference Include="MessagePack" Version="2.3.85" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
 </Project>
