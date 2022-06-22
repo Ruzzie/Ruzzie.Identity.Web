@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace Ruzzie.Identity.Storage
+namespace Ruzzie.Identity.Storage;
+
+public interface IUserOrgProps
 {
-    public interface IUserOrgProps
-    {
-        string? Role { get; set; }
-        DateTimeOffset JoinedCreationDateTimeUtc { get; set; }
-    }
+    string?        Role                      { get; set; }
+    DateTimeOffset JoinedCreationDateTimeUtc { get; set; }
 }
