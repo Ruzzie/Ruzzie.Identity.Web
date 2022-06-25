@@ -5,11 +5,11 @@ open FluentAssertions
 open System
 open System.Collections.Generic
 open System.Net
+open Ruzzie.Common.Security
 open Ruzzie.Identity.Web
 open DomainTypes.AccountValidation
 open Authentication.JWT
 open Email
-open ResultLib
 open Microsoft.Extensions.Logging
 open NUnit.Framework
 open Ruzzie.Identity.Storage.Azure
@@ -17,6 +17,18 @@ open Ruzzie.Identity.Storage.Azure.Entities
 open Ruzzie.Identity.Web.ApiTypes
 open UseCases.Shared
 open Validation
+
+
+let pepper: byte [] =
+        [| 1uy
+           233uy
+           35uy
+           71uy
+           87uy
+           15uy
+           12uy
+           31uy |]
+let passwordHasher = PasswordHasher(pepper)
 
 type UserRepositoryTestStub(userExists: string -> bool, insertNewUser: UserRegistration -> UserRegistration, getUserByEmail: string -> UserRegistration, updateUser: UserRegistration -> DateTimeOffset Nullable -> UserRegistration) =
     interface IUserRepository with
@@ -27,7 +39,7 @@ type UserRepositoryTestStub(userExists: string -> bool, insertNewUser: UserRegis
         member this.DeleteUser(email: string) = ignore true
 
 let validFakeAccountValidationToken email =
-    AccountValidation.generateAccountTokenString email (DateTimeOffset.UtcNow) (fun e -> e)
+    AccountValidation.generateAccountTokenString email DateTimeOffset.UtcNow (fun e -> e)
         AccountValidation.TokenType.ValidateEmail
 
 let validFakeOrgInviteToken email orgId =
@@ -58,10 +70,10 @@ type OrganisationRepositoryTestStub() =
         member this.GetUsersForOrganisation(organisationId: string) =
             ReadOnlyCollection<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
                 (List<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
-                    ((Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser(organisationId, "valid@valid.org", "Default", DateTimeOffset.UtcNow) :: []))) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
+                    (Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser(organisationId, "valid@valid.org", "Default", DateTimeOffset.UtcNow) :: [])) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
         member this.GetOrganisationsForUser(userId: string) =
             ReadOnlyCollection<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>
-                (List<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>((Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation(userId, "FAKEORG", "Default", DateTimeOffset.UtcNow) :: []))) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>
+                (List<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation> (Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation(userId, "FAKEORG", "Default", DateTimeOffset.UtcNow) :: [])) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>
         member this.InsertNewOrganisation(entity: Ruzzie.Identity.Storage.Azure.Entities.Organisation) = entity
         member this.UpdateOrganisation(entity: Ruzzie.Identity.Storage.Azure.Entities.Organisation, utcNow: DateTimeOffset Nullable) = entity
         member this.GetOrganisationInvite(organisationId: string, userId: string) =
@@ -72,10 +84,6 @@ type OrganisationRepositoryTestStub() =
             invitesReadOnlyList organisationId
 
         member this.GetAllOrganisationIds() = List<string>() :> IReadOnlyList<string>
-
-
-//let validFakePasswordResetToken email =
-//    AccountValidation.generateAccountTokenString email (DateTimeOffset.UtcNow) (fun e -> e) TokenType.ResetPassword
 
 let emptyDefaultUserRepositoryStub =
     UserRepositoryTestStub
@@ -115,14 +123,14 @@ let jwtTestConfig =
       Issuer = "test"
       Audience = "testA" }
 
-let logger<'a> = Microsoft.Extensions.Logging.Logger(LoggerFactory.Create((fun f -> f |> ignore)))
+let logger<'a> = Microsoft.Extensions.Logging.Logger(LoggerFactory.Create (fun f -> f |> ignore))
 let emailTemplates = {   CreateUserRegistrationActivationMail = Templates.userRegistrationActivationMail
                          CreateUserPasswordForgetMail = Templates.userPasswordForgetMail
                          CreateInviteUserToOrganisationEmail = Templates.inviteUserToOrganisationEmail }
 
 let registerValidUserWithEmailService req emailService =
     let register validInput =
-        UseCases.Users.registerUser DateTimeOffset.UtcNow emptyDefaultUserRepositoryStub (fun e -> e) jwtTestConfig
+        UseCases.Users.registerUser DateTimeOffset.UtcNow passwordHasher emptyDefaultUserRepositoryStub (fun e -> e) jwtTestConfig
             true emailService emailTemplates
             (fun token -> UseCases.Shared.createUrlWithOneQuery "https" "localhost" "activate" ("token", token)) logger
             validInput |> toListOfError
@@ -200,7 +208,7 @@ let ``authenticate valid user`` () =
 
     //Arrange
     let password =
-        match Security.hashPassword "very long test password for this test" with
+        match Security.hashPassword passwordHasher "very long test password for this test" with
         | Ok pw -> pw
         | Error e -> e.ToString()
 
@@ -209,7 +217,7 @@ let ``authenticate valid user`` () =
           password = "very long test password for this test" }
 
     let authenticate validInput =
-        UseCases.Users.authenticateLoginUser DateTimeOffset.UtcNow (userRepoForPassword password) jwtTestConfig
+        UseCases.Users.authenticateLoginUser DateTimeOffset.UtcNow passwordHasher (userRepoForPassword password) jwtTestConfig
             validInput |> toListOfError
 
     let run = AuthenticateUserInput.validateInput >=> authenticate
@@ -226,7 +234,7 @@ let ``authenticate valid user`` () =
 let ``authentication failed invalid password`` () =
     //Arrange
     let password =
-        match Security.hashPassword "very long test password for this test" with
+        match Security.hashPassword passwordHasher "very long test password for this test" with
         | Ok pw -> pw
         | Error e -> e.ToString()
 
@@ -235,7 +243,7 @@ let ``authentication failed invalid password`` () =
           password = "invalid password !" }
 
     let authenticate validInput =
-        UseCases.Users.authenticateLoginUser DateTimeOffset.UtcNow (userRepoForPassword password) jwtTestConfig
+        UseCases.Users.authenticateLoginUser DateTimeOffset.UtcNow passwordHasher (userRepoForPassword password) jwtTestConfig
             validInput |> toListOfError
 
     let run = AuthenticateUserInput.validateInput >=> authenticate
@@ -289,7 +297,7 @@ let ``confirm user email with expired email token`` () =
     match confirmResult with
     | Ok resp -> Assert.Fail("Expected error but got: " + resp.ToString()) |> ignore
     | Error err ->
-        match (err) with
+        match err with
         | InvalidToken info -> info.Value.Details.Value.Head.Should().Be("expired", null) |> ignore
         | _ -> Assert.Fail(err.ToString())
 
@@ -312,7 +320,7 @@ let ``confirm user email with already validated email token`` () =
     match confirmResult with
     | Ok resp -> Assert.Fail("Expected error but got: " + resp.ToString()) |> ignore
     | Error err ->
-        match (err) with
+        match err with
         | InvalidToken info -> info.Value.Details.Value.Head.Should().Be("userAccountAlreadyValidated", null) |> ignore
         | _ -> Assert.Fail(err.ToString())
 
@@ -348,7 +356,7 @@ let ``reset password for valid user with valid new password`` () =
     let runResult =
         AccountValidation.createToken resetTokenStr utcNow (fun d -> d)
         .=> (fun token ->
-            UseCases.Users.resetPassword DateTimeOffset.UtcNow (stubRepo) (fun d -> d)
+            UseCases.Users.resetPassword DateTimeOffset.UtcNow passwordHasher stubRepo (fun d -> d)
                 { ResetPasswordRequest.Token = token
                   ResetPasswordRequest.NewPasswordInput = "newValidPassword ff323!@" })
 
@@ -384,7 +392,7 @@ let ``reset password for valid user with valid new password should also validate
     let runResult =
         AccountValidation.createToken resetTokenStr utcNow (fun d -> d)
         .=> (fun token ->
-            UseCases.Users.resetPassword DateTimeOffset.UtcNow (stubRepo) (fun d -> d)
+            UseCases.Users.resetPassword DateTimeOffset.UtcNow passwordHasher stubRepo (fun d -> d)
                 { ResetPasswordRequest.Token = token
                   ResetPasswordRequest.NewPasswordInput = "newValidPassword ff323!@" })
 
@@ -409,7 +417,7 @@ let ``reset password for valid user with invalid new password`` () =
     let runResult =
         AccountValidation.createToken resetTokenStr utcNow (fun d -> d)
         .=> (fun token ->
-            UseCases.Users.resetPassword DateTimeOffset.UtcNow (stubRepo) (fun d -> d)
+            UseCases.Users.resetPassword DateTimeOffset.UtcNow passwordHasher stubRepo (fun d -> d)
                 { ResetPasswordRequest.Token = token
                   ResetPasswordRequest.NewPasswordInput = "invalid" })
 
@@ -434,7 +442,7 @@ let ``reset password for valid user with valid new password with expired token``
     let runResult =
         AccountValidation.createToken resetTokenStr utcNow (fun d -> d)
         .=> (fun token ->
-            UseCases.Users.resetPassword DateTimeOffset.UtcNow (stubRepo) (fun d -> d)
+            UseCases.Users.resetPassword DateTimeOffset.UtcNow passwordHasher stubRepo (fun d -> d)
                 { ResetPasswordRequest.Token = token
                   ResetPasswordRequest.NewPasswordInput = "newValidPassword ff323!@" })
 
@@ -537,10 +545,10 @@ type OrganisationRepositoryMock(getOrganisationInvite, organisationExists, userI
         member this.GetUsersForOrganisation(organisationId: string) =
             ReadOnlyCollection<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
                 (List<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
-                    ((Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser(organisationId, "valid@valid.org", "Default", DateTimeOffset.UtcNow) :: []))) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
+                    (Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser(organisationId, "valid@valid.org", "Default", DateTimeOffset.UtcNow) :: [])) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.OrganisationUser>
         member this.GetOrganisationsForUser(userId: string) =
             ReadOnlyCollection<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>
-                (List<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>((Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation(userId, "FAKEORG", "Default", DateTimeOffset.UtcNow) :: []))) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>
+                (List<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation> (Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation(userId, "FAKEORG", "Default", DateTimeOffset.UtcNow) :: [])) :> IReadOnlyList<Ruzzie.Identity.Storage.Azure.Entities.UserOrganisation>
         member this.InsertNewOrganisation(entity: Ruzzie.Identity.Storage.Azure.Entities.Organisation) = entity
         member this.UpdateOrganisation(entity: Ruzzie.Identity.Storage.Azure.Entities.Organisation, utcNow: DateTimeOffset Nullable) = entity
         member this.GetOrganisationInvite(organisationId: string, userId: string) =
@@ -577,7 +585,7 @@ let ``accept userInvitation for valid user`` () =
 
     //Act
     let runResult =
-        UseCases.Organisations.acceptOrganisationInvite utcNow stubUserRepo stubOrgRepo (fun d -> d) (fun e -> e) jwtTestConfig
+        UseCases.Organisations.acceptOrganisationInvite utcNow passwordHasher stubUserRepo stubOrgRepo (fun d -> d) (fun e -> e) jwtTestConfig
             true defaultEmptyEmailService emailTemplates (fun u -> u) logger request
 
     //Assert

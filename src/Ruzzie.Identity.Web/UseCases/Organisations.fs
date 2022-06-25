@@ -151,6 +151,7 @@ module Organisations =
 
     let acceptOrganisationInvite
         utcNow
+        passwordHasher
         (userRepository: IUserRepository)
         (orgRepository: IOrganisationRepository)
         decrypt
@@ -165,7 +166,7 @@ module Organisations =
         =
 
         let register registerUserRequest =
-            UseCases.Users.registerUser utcNow userRepository encrypt jwtConfig withEmailActivation emailService emailTemplates
+            UseCases.Users.registerUser utcNow passwordHasher userRepository encrypt jwtConfig withEmailActivation emailService emailTemplates
                 activationUrlFunc logger registerUserRequest |> toListOfError
 
         Organisations.createToken req.invitationToken utcNow decrypt

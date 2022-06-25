@@ -75,24 +75,24 @@ module Users =
             Ok(AccountValidation.generateAccountTokenString email utcNow encrypt TokenType.ValidateEmail)
         with ex -> createInvalidErrorWithExn "email" "emailValidationToken.unexpectedError" ex
 
-    let verifyPassword passwordValue (entity: UserRegistration) =
-        let verifyResult = verifyHashedPassword entity.Password (DomainTypes.PasswordValue.value passwordValue)
+    let verifyPassword passwordHasher passwordValue (entity: UserRegistration) =
+        let verifyResult = verifyHashedPassword passwordHasher entity.Password (DomainTypes.PasswordValue.value passwordValue)
         match verifyResult with
         | Ok isCorrectPwd -> Ok(isCorrectPwd, entity)
         | Error exn -> createInvalidErrorWithExn "password" "verifyPassword.unexpectedError" exn
 
-    let hashPassword password =
-        let hashResult = hashPassword password
+    let hashPassword passwordHasher password =
+        let hashResult = hashPassword passwordHasher password
         match hashResult with
         | Ok newPassword -> Ok(newPassword)
         | Error exn -> createInvalidErrorWithExn "password" "hashPassword.unexpectedError" exn
 
-    let createNewUser utcNow withEmailActivation repository encrypt (req: RegisterUserRequest) =
+    let createNewUser utcNow withEmailActivation passwordHasher repository encrypt (req: RegisterUserRequest) =
 
         let emailValidationToken =
             (if (withEmailActivation) then Result.map Some (createEmailValidationToken utcNow encrypt req) else Ok(None))
 
-        let tokenAndPasswordRes = (hashPassword (PasswordValue.value req.PasswordValue)) .<|>. emailValidationToken
+        let tokenAndPasswordRes = (hashPassword passwordHasher (PasswordValue.value req.PasswordValue)) .<|>. emailValidationToken
 
         let entityResult =
             (fun (pwd, withValidationTokenOption) ->
@@ -166,6 +166,7 @@ module Users =
 
     let registerUser
         utcNow
+        passwordHasher
         repository
         encryptFunc
         jwtSecretKey
@@ -183,7 +184,7 @@ module Users =
         let responseRes =
             (userExist req.Email)
             >=> errorWhenUserNotExists req
-            >=> createNewUser utcNow withEmailActivation repository encryptFunc
+            >=> createNewUser utcNow withEmailActivation passwordHasher repository encryptFunc
             >=> createRegisterUserResponse jwtSecretKey utcNow
 
 
@@ -210,7 +211,7 @@ module Users =
         | Error e -> Error e
 
 
-    let authenticateLoginUser utcNow userRepository jwtSecretKey (req: AuthenticateUserRequest) =
+    let authenticateLoginUser utcNow passwordHasher userRepository jwtSecretKey (req: AuthenticateUserRequest) =
 
         let errorWhenUserNotExists x exists = if not (exists) then createInvalidError "password" ([]) else Ok(x)
 
@@ -218,7 +219,7 @@ module Users =
             (userExist req.Email)
             >=> errorWhenUserNotExists req.Email
             >=> getUserByEmail userRepository
-            >=> verifyPassword req.PasswordValue
+            >=> verifyPassword passwordHasher req.PasswordValue
 
         match (responseRes userRepository) with
         | Ok (isValidPassword, entity) ->
@@ -309,7 +310,7 @@ module Users =
         | Error err -> Error(err :: [])
 
 
-    let resetPassword utcNow repository decryptFunc (req: ResetPasswordRequest) =
+    let resetPassword utcNow passwordHasher repository decryptFunc (req: ResetPasswordRequest) =
 
         match req.Token with
         | ValidToken tokenInfoFromReq ->
@@ -335,7 +336,7 @@ module Users =
 
                             let newHashedPasswordRes =
                                 passwordValidationResult
-                                .=> (fun validatedPw -> hashPassword (PasswordValue.value validatedPw))
+                                .=> (fun validatedPw -> hashPassword passwordHasher (PasswordValue.value validatedPw))
 
                             newHashedPasswordRes
                             .=> (fun hashedPassword ->
