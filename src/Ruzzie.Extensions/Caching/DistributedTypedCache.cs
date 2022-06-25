@@ -2,19 +2,45 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using MessagePack;
+using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Ruzzie.Extensions.Caching;
+
+internal static class BinarySerializer
+{
+    private static readonly MessagePackSerializerOptions SerializerOptions = ContractlessStandardResolver.Options;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static byte[] Serialize<T>(T value)
+    {
+        return MessagePackSerializer.Serialize(value, SerializerOptions);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static T Deserialize<T>(in byte[] data)
+    {
+        return MessagePackSerializer.Deserialize<T>(data, SerializerOptions);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static T Deserialize<T>(ReadOnlyMemory<byte> data)
+    {
+        return MessagePackSerializer.Deserialize<T>(data, SerializerOptions);
+    }
+}
 
 /// <summary>
 /// A Distributed cache with given default KeyPrefix and default <see cref="DistributedCacheEntryOptions"/> that uses the <see cref="IDistributedCache"/> for storage.
 /// </summary>
 /// <remarks>This cache can be used for simple access (and basically functionally sharding) to Types that need to be cached. The values are binary Serialized with MessagePack. </remarks>
-public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistributedCache
+public class DistributedTypedCache<TCache> : ITypedCache where TCache : IDistributedCache
 {
     private readonly TCache                       _distributedCache;
     private readonly ReadOnlyMemory<char>         _defaultKeyPrefix;
     private readonly DistributedCacheEntryOptions _defaultOptions;
+
 
     public DistributedTypedCache(TCache                       distributedCache
                                , string                       defaultKeyPrefix
@@ -44,23 +70,7 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
 
         return new string(keyWithPrefix);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte[] Serialize<T>(T value)
-    {
-        return MessagePack.MessagePackSerializer.Serialize(value,
-                                                           MessagePack.Resolvers.ContractlessStandardResolver
-                                                                      .Options);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static T Deserialize<T>(in byte[] data)
-    {
-        return MessagePack.MessagePackSerializer.Deserialize<T>(data,
-                                                                MessagePack.Resolvers.ContractlessStandardResolver
-                                                                           .Options);
-    }
-
+    
     public T GetOrAdd<T>(string key, Func<string, T> addFunc, DistributedCacheEntryOptions? options = null)
     {
         var cacheKey = PrefixKey(key);
@@ -69,7 +79,7 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
 
         if (entryFromCache != null)
         {
-            return Deserialize<T>(entryFromCache);
+            return BinarySerializer.Deserialize<T>(entryFromCache);
         }
 
         var value = addFunc(cacheKey);
@@ -77,16 +87,16 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
 
         return value;
     }
-        
+
     public unsafe T GetOrAdd<T>(string key, delegate*<string, T> addFunc, DistributedCacheEntryOptions? options = null)
     {
         var cacheKey = PrefixKey(key);
 
         var entryFromCache = _distributedCache.Get(cacheKey);
-
+        
         if (entryFromCache != null)
         {
-            return Deserialize<T>(entryFromCache);
+            return BinarySerializer.Deserialize<T>(entryFromCache);
         }
 
         var value = addFunc(cacheKey);
@@ -97,24 +107,24 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
 
     private void SetValue<T>(string cacheKey, T value, DistributedCacheEntryOptions? options = null)
     {
-        var valueToCache = Serialize(value);
+        var valueToCache = BinarySerializer.Serialize(value);
         _distributedCache.Set(cacheKey, valueToCache, options);
     }
 
-    private async Task SetValueAsync<T>(string                        cacheKey,
-                                        T                             value,
-                                        DistributedCacheEntryOptions? options           = null,
-                                        CancellationToken             cancellationToken = default)
+    private async Task SetValueAsync<T>(string                        cacheKey
+                                      , T                             value
+                                      , DistributedCacheEntryOptions? options           = null
+                                      , CancellationToken             cancellationToken = default)
     {
-        var valueToCache = Serialize(value);
+        var valueToCache = BinarySerializer.Serialize(value);
 
         await _distributedCache.SetAsync(cacheKey, valueToCache, options, cancellationToken);
     }
 
-    public async Task<T> GetOrAddAsync<T>(string                        key,
-                                          Func<string, Task<T>>         addFuncAsync,
-                                          DistributedCacheEntryOptions? options           = null,
-                                          CancellationToken             cancellationToken = default)
+    public async Task<T> GetOrAddAsync<T>(string                        key
+                                        , Func<string, Task<T>>         addFuncAsync
+                                        , DistributedCacheEntryOptions? options           = null
+                                        , CancellationToken             cancellationToken = default)
     {
         var cacheKey = PrefixKey(key);
 
@@ -122,7 +132,7 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
 
         if (entryFromCache != null)
         {
-            return Deserialize<T>(entryFromCache);
+            return BinarySerializer.Deserialize<T>(entryFromCache);
         }
 
         var value = await addFuncAsync(cacheKey);
@@ -141,7 +151,7 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
             return default;
         }
 
-        return Deserialize<T>(entryFromCache);
+        return BinarySerializer.Deserialize<T>(entryFromCache);
     }
 
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
@@ -154,7 +164,7 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
             return default;
         }
 
-        return Deserialize<T>(entryFromCache);
+        return BinarySerializer.Deserialize<T>(entryFromCache);
     }
 
     public void Set<T>(string key, T value, DistributedCacheEntryOptions? options = null)
@@ -163,10 +173,10 @@ public class DistributedTypedCache<TCache> :  ITypedCache  where TCache : IDistr
         SetValue(cacheKey, value, options ?? _defaultOptions);
     }
 
-    public async Task SetAsync<T>(string                        key,
-                                  T                             value,
-                                  DistributedCacheEntryOptions? options           = null,
-                                  CancellationToken             cancellationToken = default)
+    public async Task SetAsync<T>(string                        key
+                                , T                             value
+                                , DistributedCacheEntryOptions? options           = null
+                                , CancellationToken             cancellationToken = default)
     {
         var cacheKey = PrefixKey(key);
         await SetValueAsync(cacheKey, value, options ?? _defaultOptions, cancellationToken);

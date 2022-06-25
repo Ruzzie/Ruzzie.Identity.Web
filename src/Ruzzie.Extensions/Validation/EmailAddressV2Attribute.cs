@@ -12,9 +12,8 @@ public class EmailAddressV2Attribute : DataTypeAttribute
 
     }
 
-    public override bool IsValid(object value)
+    public override bool IsValid(object? value)
     {
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (value == null)
         {
             return true;

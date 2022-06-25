@@ -3,60 +3,59 @@ using MessagePack;
 using Microsoft.Azure.Cosmos.Table;
 using Ruzzie.Azure.Storage;
 
-namespace Ruzzie.Identity.Storage.Azure.Entities
+namespace Ruzzie.Identity.Storage.Azure.Entities;
+
+public class Organisation : TableEntity
 {
-    public class Organisation : TableEntity
+    public static readonly KeyGenerators.AlphaNumericKeyGenOptions AlphaNumericKeyGenOptions = KeyGenerators.AlphaNumericKeyGenOptions.TrimInput |
+                                                                                               KeyGenerators.AlphaNumericKeyGenOptions
+                                                                                                            .PreserveSpacesAsDashes;
+
+    public string? CompanyName { get; set; }
+
+    [IgnoreProperty]
+    public string? OrganisationName
     {
-        public static readonly KeyGenerators.AlphaNumericKeyGenOptions AlphaNumericKeyGenOptions = KeyGenerators.AlphaNumericKeyGenOptions.TrimInput |
-            KeyGenerators.AlphaNumericKeyGenOptions
-                         .PreserveSpacesAsDashes;
+        get => CompanyName;
+        set => CompanyName = value;
+    }
 
-        public string? CompanyName { get; set; }
+    public string?        CreatedByUserId         { get; set; }
+    public DateTimeOffset CreationDateTimeUtc     { get; set; }
+    public DateTimeOffset LastModifiedDateTimeUtc { get; set; }
 
-        [IgnoreProperty]
-        public string? OrganisationName
+    public Organisation(string          organisationName,
+                        string          createdByUserId,
+                        DateTimeOffset  creationDateTimeUtc,
+                        DateTimeOffset? lastModifiedDateTimeUtc = default)
+    {
+
+        if (string.IsNullOrWhiteSpace(organisationName))
         {
-            get => CompanyName;
-            set => CompanyName = value;
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(organisationName));
         }
 
-        public string? CreatedByUserId { get; set; }
-        public DateTimeOffset CreationDateTimeUtc { get; set; }
-        public DateTimeOffset LastModifiedDateTimeUtc { get; set; }
-
-        public Organisation(string organisationName,
-            string createdByUserId,
-            DateTimeOffset creationDateTimeUtc,
-            DateTimeOffset? lastModifiedDateTimeUtc = default)
+        if (string.IsNullOrWhiteSpace(createdByUserId))
         {
-
-            if (string.IsNullOrWhiteSpace(organisationName))
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(organisationName));
-            }
-
-            if (string.IsNullOrWhiteSpace(createdByUserId))
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(createdByUserId));
-            }
-
-            OrganisationName        = organisationName;
-            CompanyName             = organisationName;
-            CreatedByUserId         = createdByUserId;
-            CreationDateTimeUtc     = creationDateTimeUtc;
-            LastModifiedDateTimeUtc = lastModifiedDateTimeUtc ?? creationDateTimeUtc;
-
-            var alphaNumericKey = organisationName.CreateAlphaNumericKey(AlphaNumericKeyGenOptions);
-            RowKey       = alphaNumericKey;
-            PartitionKey = alphaNumericKey.CalculatePartitionKeyForAlphaNumericRowKey();
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(createdByUserId));
         }
 
-        //For Serialization / Deserialization purposes
-        // ReSharper disable once UnusedMember.Global
-        [SerializationConstructor]
-        public Organisation()
-        {
+        OrganisationName        = organisationName;
+        CompanyName             = organisationName;
+        CreatedByUserId         = createdByUserId;
+        CreationDateTimeUtc     = creationDateTimeUtc;
+        LastModifiedDateTimeUtc = lastModifiedDateTimeUtc ?? creationDateTimeUtc;
 
-        }
+        var alphaNumericKey = organisationName.CreateAlphaNumericKey(AlphaNumericKeyGenOptions);
+        RowKey       = alphaNumericKey;
+        PartitionKey = alphaNumericKey.CalculatePartitionKeyForAlphaNumericRowKey();
+    }
+
+    //For Serialization / Deserialization purposes
+    // ReSharper disable once UnusedMember.Global
+    [SerializationConstructor]
+    public Organisation()
+    {
+
     }
 }

@@ -93,6 +93,8 @@ public class DistributedTypedCacheTests
                       .BeEquivalentTo(entryToAdd, options => options.Excluding(x => x.LastModifiedAt));
     }
 
+    static readonly DateTimeOffset FixedDateTime = DateTimeOffset.UtcNow;
+
     [Test]
     public void GetOrAddAddsSuccess()
     {
@@ -117,9 +119,8 @@ public class DistributedTypedCacheTests
 
         static DataToCache Add(string key)
         {
-            return new DataToCache("Org", "GetOrAddDelegatePtr", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
+            return new DataToCache("Org", "GetOrAddDelegatePtr", FixedDateTime, FixedDateTime);
         }
-            
     }
 
     [Test]
