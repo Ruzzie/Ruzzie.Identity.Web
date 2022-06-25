@@ -6,6 +6,7 @@
         <Company>D Crafting</Company>
         <IsPackable>false</IsPackable>
         <LangVersion>default</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
