@@ -37,7 +37,9 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
     public void OrgDoesntExistsSmokeTest()
     {
         //Act & Assert
-        Repository.OrganisationExists(CreateUniqueOrganisationNameForTest(nameof(OrgDoesntExistsSmokeTest))).Should().BeFalse();
+        Repository.OrganisationExists(CreateUniqueOrganisationNameForTest(nameof(OrgDoesntExistsSmokeTest)))
+                  .Should()
+                  .BeFalse();
     }
 
     [Test]
@@ -55,8 +57,11 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
 
         //Assert
         Repository.OrganisationExists(orgName).Should().BeTrue();
-        insertedEntity.Should().BeEquivalentTo(entityToInsert,
-                                               options => options.IncludingAllDeclaredProperties().Excluding(r => r.Timestamp).Excluding(r => r.ETag));
+        insertedEntity.Should()
+                      .BeEquivalentTo(entityToInsert
+                                    , options => options.IncludingAllDeclaredProperties()
+                                                        .Excluding(r => r.Timestamp)
+                                                        .Excluding(r => r.ETag));
     }
 
     [Test]
@@ -71,12 +76,18 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
 
         //Act
         var gotEntity = Repository.GetOrganisationById(orgName.CreateAlphaNumericKey(
-                                                                                     KeyGenerators.AlphaNumericKeyGenOptions.TrimInput |
-                                                                                     KeyGenerators.AlphaNumericKeyGenOptions.PreserveSpacesAsDashes));
+                                                                                     KeyGenerators
+                                                                                         .AlphaNumericKeyGenOptions
+                                                                                         .TrimInput |
+                                                                                     KeyGenerators
+                                                                                         .AlphaNumericKeyGenOptions
+                                                                                         .PreserveSpacesAsDashes));
 
         //Assert
-        gotEntity.Should().BeEquivalentTo(insertedEntity,
-                                          options => options.Excluding(x => x.SelectedMemberInfo.DeclaringType == typeof(TableEntity)));
+        gotEntity.Should()
+                 .BeEquivalentTo(insertedEntity
+                               , options => options.Excluding(x => x.SelectedMemberInfo.DeclaringType ==
+                                                                   typeof(TableEntity)));
     }
 
     [Test]
@@ -87,8 +98,12 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
 
         //Act
         var gotEntity = Repository.GetOrganisationById(orgName.CreateAlphaNumericKey(
-                                                                                     KeyGenerators.AlphaNumericKeyGenOptions.TrimInput |
-                                                                                     KeyGenerators.AlphaNumericKeyGenOptions.PreserveSpacesAsDashes));
+                                                                                     KeyGenerators
+                                                                                         .AlphaNumericKeyGenOptions
+                                                                                         .TrimInput |
+                                                                                     KeyGenerators
+                                                                                         .AlphaNumericKeyGenOptions
+                                                                                         .PreserveSpacesAsDashes));
 
         //Assert
         gotEntity.Should().BeNull();
@@ -114,7 +129,8 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
         //Assert
         //ReferenceEquals(entity, updatedEntity).Should().BeFalse();
 
-        updatedEntity.Should().BeSameAs(entity);//GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
+        updatedEntity.Should()
+                     .BeSameAs(entity); //GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
         updatedEntity.LastModifiedDateTimeUtc.Should().BeAfter(originalTimeStamp);
     }
 
@@ -160,29 +176,40 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
     public void UpsertOrganisationInvite_Insert_SmokeTest()
     {
         //Arrange
-        var userId = UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(UpsertOrganisationInvite_Insert_SmokeTest));
-        var orgName = CreateUniqueOrganisationNameForTest(nameof(UpsertOrganisationInvite_Insert_SmokeTest));
+        var userId =
+            UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(UpsertOrganisationInvite_Insert_SmokeTest));
+        var orgName      = CreateUniqueOrganisationNameForTest(nameof(UpsertOrganisationInvite_Insert_SmokeTest));
         var organisation = new Organisation(orgName, userId, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
-        var entityToInsert = new OrganisationInvite(organisation.RowKey, userId, "valid@valid.org",
-                                                    "myInvitationtoken", DateTimeOffset.UtcNow, 0);
+        var entityToInsert = new OrganisationInvite(organisation.RowKey
+                                                  , userId
+                                                  , "valid@valid.org"
+                                                  , "myInvitationtoken"
+                                                  , DateTimeOffset.UtcNow
+                                                  , 0);
 
         //Act
         var entity = Repository.UpsertOrganisationInvite(entityToInsert);
 
         //Assert
-        entityToInsert.Should().BeSameAs(entity);//GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
+        entityToInsert.Should()
+                      .BeSameAs(entity); //GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
     }
 
     [Test]
     public void UpsertOrganisationInvite_Update_SmokeTest()
     {
         //Arrange
-        var userId = UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(UpsertOrganisationInvite_Update_SmokeTest));
+        var userId =
+            UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(UpsertOrganisationInvite_Update_SmokeTest));
         var orgName = CreateUniqueOrganisationNameForTest(nameof(UpsertOrganisationInvite_Update_SmokeTest));
         var originalModificationDateTime = DateTimeOffset.UtcNow;
         var organisation = new Organisation(orgName, userId, DateTimeOffset.UtcNow, originalModificationDateTime);
-        var entityToInsert = new OrganisationInvite(organisation.RowKey, userId, "valid@valid.org",
-                                                    "myInvitationtoken", DateTimeOffset.UtcNow, 0);
+        var entityToInsert = new OrganisationInvite(organisation.RowKey
+                                                  , userId
+                                                  , "valid@valid.org"
+                                                  , "myInvitationtoken"
+                                                  , DateTimeOffset.UtcNow
+                                                  , 0);
 
         //Insert
         var entity = Repository.UpsertOrganisationInvite(entityToInsert);
@@ -195,7 +222,8 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
 
         //Assert
         updatedEntity.InvitationToken.Should().Be("UpdatedToken");
-        entityToInsert.Should().BeSameAs(entity);//GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
+        entityToInsert.Should()
+                      .BeSameAs(entity); //GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
         updatedEntity.LastModifiedDateTimeUtc.Should().BeAfter(originalModificationDateTime);
     }
 
@@ -207,8 +235,12 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
         var orgName = CreateUniqueOrganisationNameForTest(nameof(GetOrganisationInvite_SmokeTest));
         var originalModificationDateTime = DateTimeOffset.UtcNow;
         var organisation = new Organisation(orgName, userId, DateTimeOffset.UtcNow, originalModificationDateTime);
-        var entityToInsert = new OrganisationInvite(organisation.RowKey, userId, "valid@valid.org",
-                                                    "myInvitationtoken", DateTimeOffset.UtcNow, 0);
+        var entityToInsert = new OrganisationInvite(organisation.RowKey
+                                                  , userId
+                                                  , "valid@valid.org"
+                                                  , "myInvitationtoken"
+                                                  , DateTimeOffset.UtcNow
+                                                  , 0);
 
         //Insert
         var entity = Repository.UpsertOrganisationInvite(entityToInsert);
@@ -217,23 +249,30 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
         var retrievedEntity = Repository.GetOrganisationInvite(entity.PartitionKey, userId);
 
         //Act
-        entity.Should().BeEquivalentTo(retrievedEntity,
-                                       options => options.IncludingAllDeclaredProperties()
-                                                         .Excluding(r => r.Timestamp)
-                                                         .Excluding(r => r.ETag)
-                                                         .Excluding(x => x.SelectedMemberInfo.DeclaringType == typeof(TableEntity)));
+        entity.Should()
+              .BeEquivalentTo(retrievedEntity
+                            , options => options.IncludingAllDeclaredProperties()
+                                                .Excluding(r => r.Timestamp)
+                                                .Excluding(r => r.ETag)
+                                                .Excluding(x => x.SelectedMemberInfo.DeclaringType ==
+                                                                typeof(TableEntity)));
     }
 
     [Test]
     public void GetAllOrganisationInvites_SmokeTest()
     {
         //Arrange
-        var userId = UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(GetAllOrganisationInvites_SmokeTest));
+        var userId =
+            UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(GetAllOrganisationInvites_SmokeTest));
         var orgName = CreateUniqueOrganisationNameForTest(nameof(GetAllOrganisationInvites_SmokeTest));
         var originalModificationDateTime = DateTimeOffset.UtcNow;
         var organisation = new Organisation(orgName, userId, DateTimeOffset.UtcNow, originalModificationDateTime);
-        var entityToInsert = new OrganisationInvite(organisation.RowKey, userId, "valid@valid.org",
-                                                    "myInvitationtoken", DateTimeOffset.UtcNow, 0);
+        var entityToInsert = new OrganisationInvite(organisation.RowKey
+                                                  , userId
+                                                  , "valid@valid.org"
+                                                  , "myInvitationtoken"
+                                                  , DateTimeOffset.UtcNow
+                                                  , 0);
 
         //Insert
         var entity = Repository.UpsertOrganisationInvite(entityToInsert);
@@ -249,8 +288,9 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
     public void DeleteUserFromOrganisation_SmokeTest()
     {
         //Arrange
-        var userId = UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(DeleteUserFromOrganisation_SmokeTest));
-        var orgName = CreateUniqueOrganisationNameForTest(nameof(DeleteUserFromOrganisation_SmokeTest));
+        var userId =
+            UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(DeleteUserFromOrganisation_SmokeTest));
+        var orgName        = CreateUniqueOrganisationNameForTest(nameof(DeleteUserFromOrganisation_SmokeTest));
         var entityToInsert = new Organisation(orgName, userId, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
 
         var entity = Repository.InsertNewOrganisation(entityToInsert);
@@ -268,12 +308,17 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
     public void DeleteOrganisationInvite_SmokeTest()
     {
         //Arrange
-        var userId = UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(DeleteOrganisationInvite_SmokeTest));
+        var userId =
+            UserRepositoryIntegrationTests.CreateUniqueEmailForTest(nameof(DeleteOrganisationInvite_SmokeTest));
         var orgName = CreateUniqueOrganisationNameForTest(nameof(DeleteOrganisationInvite_SmokeTest));
         var originalModificationDateTime = DateTimeOffset.UtcNow;
         var organisation = new Organisation(orgName, userId, DateTimeOffset.UtcNow, originalModificationDateTime);
-        var entityToInsert = new OrganisationInvite(organisation.RowKey, userId, "valid@valid.org",
-                                                    "myInvitationtoken", DateTimeOffset.UtcNow, 0);
+        var entityToInsert = new OrganisationInvite(organisation.RowKey
+                                                  , userId
+                                                  , "valid@valid.org"
+                                                  , "myInvitationtoken"
+                                                  , DateTimeOffset.UtcNow
+                                                  , 0);
 
         //Insert
         var entity = Repository.UpsertOrganisationInvite(entityToInsert);
@@ -305,10 +350,24 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
     }
 
     [Test]
+    public void GetUsersForOrganisationIsEmptyForExistingOrganisation()
+    {
+        //Arrange
+        var userId =
+            UserRepositoryIntegrationTests
+                .CreateUniqueEmailForTest(nameof(GetUsersForOrganisationIsEmptyForExistingOrganisation));
+        var orgName        = CreateUniqueOrganisationNameForTest(nameof(DeleteOrganisation_SmokeTest));
+        var entityToInsert = new Organisation(orgName, userId, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
+
+        var entity = Repository.InsertNewOrganisation(entityToInsert);
+
+        //Act & Assert
+        Repository.GetUsersForOrganisation(entity.RowKey).Should().NotBeNull().And.HaveCount(0);
+    }
+
+    [Test]
     public void GetAllOrganisationIds_SmokeTest()
     {
         Repository.GetAllOrganisationIds().Should().HaveCountGreaterThan(0);
     }
-
-
 }

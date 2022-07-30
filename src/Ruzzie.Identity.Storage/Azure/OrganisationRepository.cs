@@ -17,10 +17,10 @@ public class OrganisationRepository : IOrganisationRepository
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public OrganisationRepository(
-        CloudTablePool organisationTable,
-        CloudTablePool user_organisation_Table,
-        CloudTablePool organisation_user_Table,
-        CloudTablePool organisationInvitesTable
+        CloudTablePool organisationTable
+      , CloudTablePool user_organisation_Table
+      , CloudTablePool organisation_user_Table
+      , CloudTablePool organisationInvitesTable
     )
     {
         _organisationTable        = organisationTable;
@@ -49,7 +49,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error checking {nameof(OrganisationExists)} in [{_organisationTable.TableName}] with [{organisationName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error checking {nameof(OrganisationExists)} in [{_organisationTable.TableName}] with [{organisationName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -67,12 +69,15 @@ public class OrganisationRepository : IOrganisationRepository
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(InsertNewOrganisation)}] in [{_organisationTable.TableName}]: [{entity.PartitionKey}]-[{entity.RowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(InsertNewOrganisation)}] in [{_organisationTable.TableName}]: [{entity.PartitionKey}]-[{entity.RowKey}]. [{e.Message}]"
+                              , e);
         }
     }
 
-    public void AddUserToOrganisation(string userId, string organisationId, string role, DateTimeOffset joinedCreationDateTimeUtc)
+    public void AddUserToOrganisation(string         userId
+                                    , string         organisationId
+                                    , string         role
+                                    , DateTimeOffset joinedCreationDateTimeUtc)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
@@ -104,8 +109,8 @@ public class OrganisationRepository : IOrganisationRepository
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(AddUserToOrganisation)}] in [{_userOrganisationTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(AddUserToOrganisation)}] in [{_userOrganisationTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]"
+                              , e);
         }
 
         partitionKey = "";
@@ -115,15 +120,15 @@ public class OrganisationRepository : IOrganisationRepository
         {
             partitionKey = organisationId;
             rowKey       = userId;
-            var orgUserEntity = new OrganisationUser( partitionKey, rowKey, role, joinedCreationDateTimeUtc);
+            var orgUserEntity = new OrganisationUser(partitionKey, rowKey, role, joinedCreationDateTimeUtc);
 
             _organisationUserTable.InsertEntity(orgUserEntity);
         }
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(AddUserToOrganisation)}] in [{_organisationUserTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(AddUserToOrganisation)}] in [{_organisationUserTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]"
+                              , e);
         }
     }
 
@@ -152,8 +157,8 @@ public class OrganisationRepository : IOrganisationRepository
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(DeleteUserFromOrganisation)}] in [{_userOrganisationTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(DeleteUserFromOrganisation)}] in [{_userOrganisationTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]"
+                              , e);
         }
         finally
         {
@@ -167,8 +172,8 @@ public class OrganisationRepository : IOrganisationRepository
             catch (Exception e)
             {
                 throw new Exception(
-                                    $"Error for [{nameof(DeleteUserFromOrganisation)}] in [{_organisationUserTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]",
-                                    e);
+                                    $"Error for [{nameof(DeleteUserFromOrganisation)}] in [{_organisationUserTable.TableName}]: [{partitionKey}]-[{rowKey}]. [{e.Message}]"
+                                  , e);
             }
         }
         //?: Delete org when org has no users, nope not for now
@@ -176,7 +181,7 @@ public class OrganisationRepository : IOrganisationRepository
         //?: What if the user was the user that created the organisation....: do nothing for now
     }
 
-    public Organisation GetOrganisationById(string organisationId)
+    public Organisation? GetOrganisationById(string organisationId)
     {
         if (string.IsNullOrWhiteSpace(organisationId))
         {
@@ -192,7 +197,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(GetOrganisationById)}] in [{_organisationTable.TableName}] with [{organisationId}]: [{partitionKey}]-[{organisationId}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(GetOrganisationById)}] in [{_organisationTable.TableName}] with [{organisationId}]: [{partitionKey}]-[{organisationId}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -207,11 +214,12 @@ public class OrganisationRepository : IOrganisationRepository
 
         try
         {
-            partitionKey = organisationId.CreateAlphaNumericPartitionKey(Organisation.AlphaNumericKeyGenOptions).ToString();
+            partitionKey = organisationId.CreateAlphaNumericPartitionKey(Organisation.AlphaNumericKeyGenOptions)
+                                         .ToString();
             _organisationTable.Delete(partitionKey, organisationId);
 
             var usersForOrganisation = GetUsersForOrganisation(organisationId);
-            if (usersForOrganisation?.Count > 0)
+            if (usersForOrganisation.Count > 0)
             {
                 for (var i = 0; i < usersForOrganisation.Count; i++)
                 {
@@ -222,7 +230,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(DeleteOrganisation)}] in [{_organisationTable.TableName}] with [{organisationId}]: [{partitionKey}]-[{organisationId}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(DeleteOrganisation)}] in [{_organisationTable.TableName}] with [{organisationId}]: [{partitionKey}]-[{organisationId}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -246,7 +256,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(UserIsInOrganisation)}] in [{_userOrganisationTable.TableName}] with [{organisationId}]: [{partitionKey}]-[{organisationId}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(UserIsInOrganisation)}] in [{_userOrganisationTable.TableName}] with [{organisationId}]: [{partitionKey}]-[{organisationId}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -265,7 +277,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(GetOrganisationsForUser)}] in [{_userOrganisationTable.TableName}] with [{userId}]: [{partitionKey}]-[*]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(GetOrganisationsForUser)}] in [{_userOrganisationTable.TableName}] with [{userId}]: [{partitionKey}]-[*]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -284,7 +298,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(GetUsersForOrganisation)}] in [{_organisationUserTable.TableName}] with [{organisationId}]: [{partitionKey}]-[*]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(GetUsersForOrganisation)}] in [{_organisationUserTable.TableName}] with [{organisationId}]: [{partitionKey}]-[*]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -303,8 +319,8 @@ public class OrganisationRepository : IOrganisationRepository
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(UpdateOrganisation)}] in [{_organisationTable.TableName}]: [{entity.PartitionKey}]-[{entity.RowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(UpdateOrganisation)}] in [{_organisationTable.TableName}]: [{entity.PartitionKey}]-[{entity.RowKey}]. [{e.Message}]"
+                              , e);
         }
     }
 
@@ -323,12 +339,12 @@ public class OrganisationRepository : IOrganisationRepository
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(UpsertOrganisationInvite)}] in [{_organisationInvitesTable.TableName}]: [{entity.PartitionKey}]-[{entity.RowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(UpsertOrganisationInvite)}] in [{_organisationInvitesTable.TableName}]: [{entity.PartitionKey}]-[{entity.RowKey}]. [{e.Message}]"
+                              , e);
         }
     }
 
-    public OrganisationInvite GetOrganisationInvite(string organisationId, string userId)
+    public OrganisationInvite? GetOrganisationInvite(string organisationId, string userId)
     {
         if (string.IsNullOrWhiteSpace(organisationId))
         {
@@ -346,7 +362,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(GetOrganisationInvite)}] in [{_organisationInvitesTable.TableName}] with: [{organisationId}]-[{userId}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(GetOrganisationInvite)}] in [{_organisationInvitesTable.TableName}] with: [{organisationId}]-[{userId}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -368,7 +386,9 @@ public class OrganisationRepository : IOrganisationRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(DeleteOrganisationInvite)}] in [{_organisationInvitesTable.TableName}] with: [{organisationId}]-[{userId}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(DeleteOrganisationInvite)}] in [{_organisationInvitesTable.TableName}] with: [{organisationId}]-[{userId}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -383,24 +403,44 @@ public class OrganisationRepository : IOrganisationRepository
         {
             return _organisationInvitesTable.Pool.ExecuteOnAvailableObject(table =>
                                                                            {
-                                                                               var partitionKeyFilter = TableQuery.GenerateFilterCondition(TableQueryHelpers.PartitionKeyField,
-                                                                                                                                           TableQueryHelpers.OpEquals, organisationId);
-                                                                               var invitationStatusFilter = TableQuery.GenerateFilterConditionForInt(
-                                                                                                                                                     nameof(OrganisationInvite.InvitationStatus), TableQueryHelpers.OpEquals, invitationStatus);
+                                                                               var partitionKeyFilter =
+                                                                                   TableQuery
+                                                                                       .GenerateFilterCondition(TableQueryHelpers
+                                                                                                                    .PartitionKeyField
+                                                                                                              , TableQueryHelpers
+                                                                                                                    .OpEquals
+                                                                                                              , organisationId);
+                                                                               var invitationStatusFilter =
+                                                                                   TableQuery
+                                                                                       .GenerateFilterConditionForInt(
+                                                                                                                      nameof
+                                                                                                                      (OrganisationInvite
+                                                                                                                           .InvitationStatus)
+                                                                                                                    , TableQueryHelpers
+                                                                                                                          .OpEquals
+                                                                                                                    , invitationStatus);
 
-                                                                               var query = new TableQuery<OrganisationInvite>
-                                                                                           {
-                                                                                               FilterString = TableQuery.CombineFilters(partitionKeyFilter, TableQueryHelpers.OpAnd,
-                                                                                                                                        invitationStatusFilter)
-                                                                                           };
+                                                                               var query =
+                                                                                   new TableQuery<OrganisationInvite>
+                                                                                   {
+                                                                                       FilterString =
+                                                                                           TableQuery
+                                                                                               .CombineFilters(partitionKeyFilter
+                                                                                                             , TableQueryHelpers
+                                                                                                                   .OpAnd
+                                                                                                             , invitationStatusFilter)
+                                                                                   };
 
-                                                                               return table.ExecuteQuery(query).ToList();
+                                                                               return table.ExecuteQuery(query)
+                                                                                           .ToList();
                                                                            }
                                                                           );
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(GetAllOrganisationInvites)}] in [{_organisationInvitesTable.TableName}] with: [{organisationId}]-[{invitationStatus}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(GetAllOrganisationInvites)}] in [{_organisationInvitesTable.TableName}] with: [{organisationId}]-[{invitationStatus}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -411,12 +451,20 @@ public class OrganisationRepository : IOrganisationRepository
             var allPartitions = KeyGenerators.AllAlphaNumericPartitions;
             return _organisationTable.Pool.ExecuteOnAvailableObject(table =>
                                                                     {
-                                                                        return new AzureStorageTableLoader<DynamicTableEntity, string>(table, tableEntity => tableEntity.RowKey, allPartitions).AllEntities;
+                                                                        return new AzureStorageTableLoader<
+                                                                                DynamicTableEntity, string>(table
+                                                                                                          , tableEntity =>
+                                                                                                                tableEntity
+                                                                                                                    .RowKey
+                                                                                                          , allPartitions)
+                                                                            .AllEntities;
                                                                     });
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(GetAllOrganisationIds)}] in [{_organisationTable.TableName}]-[*]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(GetAllOrganisationIds)}] in [{_organisationTable.TableName}]-[*]. [{e.Message}]"
+                        , e);
         }
     }
 }

@@ -15,9 +15,9 @@
     <ItemGroup>
 
         <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
-        <PackageReference Include="Ruzzie.Azure.Storage" Version="7.1.0.36" />
-        <PackageReference Include="Ruzzie.Common" Version="5.2.0.94" />
-        <PackageReference Include="Ruzzie.FuzzyStrings" Version="7.0.0.51" />
+        <PackageReference Include="Ruzzie.Azure.Storage" Version="8.0.0.37" />
+        <PackageReference Include="Ruzzie.Common" Version="6.0.1.101" />
+        <PackageReference Include="Ruzzie.FuzzyStrings" Version="7.0.1.53" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>

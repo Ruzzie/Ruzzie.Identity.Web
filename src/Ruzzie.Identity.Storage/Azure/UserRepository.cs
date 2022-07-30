@@ -29,7 +29,9 @@ public class UserRepository : IUserRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error checking UserExists in [{_userRegistrationTable.TableName}] with [{email}]: [{partitionKey}]-[{email}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error checking UserExists in [{_userRegistrationTable.TableName}] with [{email}]: [{partitionKey}]-[{email}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -47,12 +49,12 @@ public class UserRepository : IUserRepository
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(InsertNewUser)}] in [{_userRegistrationTable.TableName}]: [{userEntity.PartitionKey}]-[{userEntity.RowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(InsertNewUser)}] in [{_userRegistrationTable.TableName}]: [{userEntity.PartitionKey}]-[{userEntity.RowKey}]. [{e.Message}]"
+                              , e);
         }
     }
 
-    public UserRegistration GetUserByEmail(string email)
+    public UserRegistration? GetUserByEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
         {
@@ -68,7 +70,9 @@ public class UserRepository : IUserRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(GetUserByEmail)}] in [{_userRegistrationTable.TableName}] with [{email}]: [{partitionKey}]-[{email}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(GetUserByEmail)}] in [{_userRegistrationTable.TableName}] with [{email}]: [{partitionKey}]-[{email}]. [{e.Message}]"
+                        , e);
         }
     }
 
@@ -87,8 +91,8 @@ public class UserRepository : IUserRepository
         catch (Exception e)
         {
             throw new Exception(
-                                $"Error for [{nameof(UpdateUser)}] in [{_userRegistrationTable.TableName}]: [{userEntity.PartitionKey}]-[{userEntity.RowKey}]. [{e.Message}]",
-                                e);
+                                $"Error for [{nameof(UpdateUser)}] in [{_userRegistrationTable.TableName}]: [{userEntity.PartitionKey}]-[{userEntity.RowKey}]. [{e.Message}]"
+                              , e);
         }
     }
 
@@ -108,7 +112,9 @@ public class UserRepository : IUserRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"Error for [{nameof(DeleteUser)}] in [{_userRegistrationTable.TableName}] with [{email}]: [{partitionKey}]-[{email}]. [{e.Message}]", e);
+            throw new
+                Exception($"Error for [{nameof(DeleteUser)}] in [{_userRegistrationTable.TableName}] with [{email}]: [{partitionKey}]-[{email}]. [{e.Message}]"
+                        , e);
         }
     }
 }

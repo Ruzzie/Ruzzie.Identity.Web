@@ -52,12 +52,15 @@ public class OrganisationRepositoryWithCache : IOrganisationRepository
         _cache.Remove($"{CacheKeyOrganisationEntityPrefix}{organisationId}");
     }
 
-    public void AddUserToOrganisation(string userId, string organisationId, string role, DateTimeOffset joinedCreationDateTimeUtc)
+    public void AddUserToOrganisation(string         userId
+                                    , string         organisationId
+                                    , string         role
+                                    , DateTimeOffset joinedCreationDateTimeUtc)
     {
         _orgRepository.AddUserToOrganisation(userId, organisationId, role, joinedCreationDateTimeUtc);
 
         var cacheKey = $"{CacheKeyUserInOrganisationPrefix}{organisationId}{userId}";
-        _cache.Set(cacheKey, new []{Convert.ToByte(true)});
+        _cache.Set(cacheKey, new[] { Convert.ToByte(true) });
     }
 
     public void DeleteUserFromOrganisation(string userId, string organisationId)
@@ -65,7 +68,7 @@ public class OrganisationRepositoryWithCache : IOrganisationRepository
         _orgRepository.DeleteUserFromOrganisation(userId, organisationId);
 
         var cacheKey = $"{CacheKeyUserInOrganisationPrefix}{organisationId}{userId}";
-        _cache.Set(cacheKey, new []{Convert.ToByte(false)});
+        _cache.Set(cacheKey, new[] { Convert.ToByte(false) });
     }
 
     public Organisation GetOrganisationById(string organisationId)
@@ -73,8 +76,8 @@ public class OrganisationRepositoryWithCache : IOrganisationRepository
         var dataFromCache = _cache.Get($"{CacheKeyOrganisationEntityPrefix}{organisationId}");
         if (dataFromCache != null)
         {
-            return MessagePack.MessagePackSerializer.Deserialize<Organisation>(dataFromCache,
-                                                                               ContractlessStandardResolver.Options);
+            return MessagePack.MessagePackSerializer.Deserialize<Organisation>(dataFromCache
+                                                                             , ContractlessStandardResolver.Options);
         }
 
         var orgEntity = _orgRepository.GetOrganisationById(organisationId);
@@ -85,6 +88,7 @@ public class OrganisationRepositoryWithCache : IOrganisationRepository
             var data = MessagePack.MessagePackSerializer.Serialize(orgEntity, ContractlessStandardResolver.Options);
             _cache.Set($"{CacheKeyOrganisationEntityPrefix}{orgEntity.RowKey}", data);
         }
+
         return orgEntity!;
     }
 
@@ -95,7 +99,8 @@ public class OrganisationRepositoryWithCache : IOrganisationRepository
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (updateOrganisation != null)
         {
-            var data = MessagePack.MessagePackSerializer.Serialize(updateOrganisation, ContractlessStandardResolver.Options);
+            var data = MessagePack.MessagePackSerializer.Serialize(updateOrganisation
+                                                                 , ContractlessStandardResolver.Options);
             _cache.Set($"{CacheKeyOrganisationEntityPrefix}{updateOrganisation.RowKey}", data);
         }
 
@@ -112,7 +117,7 @@ public class OrganisationRepositoryWithCache : IOrganisationRepository
         }
 
         var userIsInOrganisation = _orgRepository.UserIsInOrganisation(organisationId, userId);
-        _cache.Set(cacheKey, new[] {Convert.ToByte(userIsInOrganisation)});
+        _cache.Set(cacheKey, new[] { Convert.ToByte(userIsInOrganisation) });
         return userIsInOrganisation;
     }
 
@@ -131,7 +136,7 @@ public class OrganisationRepositoryWithCache : IOrganisationRepository
         return _orgRepository.UpsertOrganisationInvite(entity, utcNow);
     }
 
-    public OrganisationInvite GetOrganisationInvite(string organisationId, string userId)
+    public OrganisationInvite? GetOrganisationInvite(string organisationId, string userId)
     {
         return _orgRepository.GetOrganisationInvite(organisationId, userId);
     }

@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Ruzzie.Common" Version="5.2.0.94" />
+        <PackageReference Include="Ruzzie.Common" Version="6.0.1.101" />
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
         <PackageReference Include="MessagePack" Version="2.3.112" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
