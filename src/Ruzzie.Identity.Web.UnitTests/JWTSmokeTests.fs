@@ -37,5 +37,5 @@ let createEmailValidationTokenTest() =
 
 [<Property>]
 let ``createEmailValidationtoken does not throw exceptions `` (forEmail: NonEmptyString) tokenIssueDate =
-    not (String.IsNullOrWhiteSpace(generateAccountTokenString ((forEmail.Get)) tokenIssueDate (fun x -> x) TokenType.ValidateEmail))
+    not (String.IsNullOrWhiteSpace(generateAccountTokenString forEmail.Get tokenIssueDate (fun x -> x) TokenType.ValidateEmail))
 

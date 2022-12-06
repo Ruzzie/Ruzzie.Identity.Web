@@ -33,12 +33,12 @@ module Email =
         create
         <!> (StringNonEmpty.create from (Some({FieldName = "createSendEmailRequest.from"
                                                Details = None})))
-        <.*.> (EmailAddressValue.create ``to`` (Some({FieldName = ("createSendEmailRequest.to")
+        <.*.> (EmailAddressValue.create ``to`` (Some({FieldName = "createSendEmailRequest.to"
                                                       Details = None})))
         <*.> match replyTo with
              |Some replyToStr -> (EmailAddressValue.create replyToStr (Some({FieldName = "createSendEmailRequest.replyTo"
                                                                              Details = None}))) |> Result.map (fun k -> Some k)
-             |None -> Ok (None)
+             |None -> Ok None
         <*.> (StringNonEmpty.create subject (Some({FieldName = "createSendEmailRequest.subject"
                                                    Details = None})))
         <*.> (StringNonEmpty.create text (Some({FieldName = "createSendEmailRequest.text"
@@ -65,7 +65,7 @@ module Email =
             request.AddParameter("text", (StringNonEmpty.value emailRequest.TextContent)) |> ignore
 
             if not (System.String.IsNullOrWhiteSpace(emailRequest.HtmlContent)) then
-                request.AddParameter("html", (emailRequest.HtmlContent)) |> ignore
+                request.AddParameter("html", emailRequest.HtmlContent) |> ignore
             else
                 ()
 

@@ -34,7 +34,7 @@ let ``create invitation Token Data from encrypted string Valid Token test ``() =
 
 
 [<TestCase(OrganisationTokenType.Invitation)>]
-let ``create organisation Token Data from encrypted string Token Type Test `` (tokenType) =
+let ``create organisation Token Data from encrypted string Token Type Test `` tokenType =
     let tokenStr =
         Organisations.generateOrganisationTokenString "test@valid.org" "ACME-01"
             (DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(1.0))) (fun e -> e) tokenType

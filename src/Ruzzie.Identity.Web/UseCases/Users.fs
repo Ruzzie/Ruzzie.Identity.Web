@@ -16,7 +16,7 @@ module Users =
     let userExist email (repository: IUserRepository) =
         try
             //Check if the user already exists
-            Ok(repository.UserExists((EmailAddressValue.value email)))
+            Ok(repository.UserExists (EmailAddressValue.value email))
         with ex -> createInvalidErrorWithExn "email" "userExists.unexpectedError" ex
 
     let userExists2 repository email = userExist email repository .=> (fun exists -> Ok(exists, email))
@@ -90,13 +90,13 @@ module Users =
     let createNewUser utcNow withEmailActivation passwordHasher repository encrypt (req: RegisterUserRequest) =
 
         let emailValidationToken =
-            (if (withEmailActivation) then Result.map Some (createEmailValidationToken utcNow encrypt req) else Ok(None))
+            (if withEmailActivation then Result.map Some (createEmailValidationToken utcNow encrypt req) else Ok(None))
 
         let tokenAndPasswordRes = (hashPassword passwordHasher (PasswordValue.value req.PasswordValue)) .<|>. emailValidationToken
 
         let entityResult =
             (fun (pwd, withValidationTokenOption) ->
-                match (withValidationTokenOption) with
+                match withValidationTokenOption with
                 | Some validationToken ->
                     UserRegistration
                         ((EmailAddressValue.value req.Email),
@@ -179,7 +179,7 @@ module Users =
         =
 
         let errorWhenUserNotExists x exists =
-            if (exists) then createInvalidError "email" ("userAlreadyExists" :: []) else Ok(x)
+            if exists then createInvalidError "email" ("userAlreadyExists" :: []) else Ok(x)
 
         let responseRes =
             (userExist req.Email)
@@ -190,7 +190,7 @@ module Users =
 
         match (responseRes repository) with
         | Ok (response, emailToken) ->
-            if (withEmailActivation) then
+            if withEmailActivation then
 
                 let createEmailResult =
                     (emailTemplates.CreateUserRegistrationActivationMail
@@ -213,7 +213,7 @@ module Users =
 
     let authenticateLoginUser utcNow passwordHasher userRepository jwtSecretKey (req: AuthenticateUserRequest) =
 
-        let errorWhenUserNotExists x exists = if not (exists) then createInvalidError "password" ([]) else Ok(x)
+        let errorWhenUserNotExists x exists = if not exists then createInvalidError "password" [] else Ok(x)
 
         let responseRes =
             (userExist req.Email)
@@ -223,10 +223,10 @@ module Users =
 
         match (responseRes userRepository) with
         | Ok (isValidPassword, entity) ->
-            if (isValidPassword) then
+            if isValidPassword then
                 createAuthenticateUserResponse jwtSecretKey utcNow entity
             else
-                createInvalidError "password" ([])
+                createInvalidError "password" []
         | Error e -> Error e
 
     let confirmUserEmail utcNow (repository: IUserRepository) jwtSecretKey decryptFunc (token: Token) =
@@ -289,7 +289,7 @@ module Users =
 
         match existsResult with
         | Ok userExists ->
-            if not (userExists) then
+            if not userExists then
                 Ok(ignore userExists)
             else
 
@@ -364,7 +364,7 @@ module Users =
     let organisationExists orgName (repository: IOrganisationRepository) =
         try
             //Check if the user already exists
-            Ok(repository.OrganisationExists((StringRequiredValue.value orgName)))
+            Ok(repository.OrganisationExists (StringRequiredValue.value orgName))
         with ex -> createInvalidErrorWithExn "OrganisationName" "organisationExists.unexpectedError" ex
 
     let getOrganisationById (repository: IOrganisationRepository) orgId =
@@ -400,7 +400,7 @@ module Users =
     let createUserOrganisationsApiTypeUnsafe userOrgsEntities getOrganisation =
         [
 
-            for (userOrg: UserOrganisation) in userOrgsEntities do
+            for userOrg: UserOrganisation in userOrgsEntities do
                 let (orgEntityForCurrent: Organisation) = getOrganisation userOrg.RowKey
                 {
                     ApiTypes.UserOrganisation.id = userOrg.RowKey
@@ -432,7 +432,7 @@ module Users =
     let createUserApiTypeForCreateOrg
         (userRegistrationEntity: UserRegistration)
         (initialOrgEntity: Organisation)
-        (userOrgsEntities)
+        userOrgsEntities
         (orgRepo: IOrganisationRepository)
         =
         try

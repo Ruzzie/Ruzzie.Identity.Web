@@ -1,7 +1,6 @@
 ﻿namespace Ruzzie.Identity.Web.UseCases
 
 open Ruzzie.Identity.Web
-open Ruzzie.Identity.Web.ResultLib
 
 module Authorization =
 
@@ -34,8 +33,8 @@ module Authorization =
             if isInOrg = true then
                 Ok
                     (AuthorizedOrganisationUser
-                        ({ userId = userId
-                           organisationId = orgId }))
+                        { userId = userId
+                          organisationId = orgId })
             else
                 Error Unauthorized
         | Error e -> Error e)

@@ -30,9 +30,9 @@ module Shared =
         if String.IsNullOrWhiteSpace(email) then
             Error
                 (ErrorKind.CannotBeEmpty
-                    ((Some
-                        { ErrInfo.FieldName = "email"
-                          ErrInfo.Details = None })))
+                    (Some
+                       { ErrInfo.FieldName = "email"
+                         ErrInfo.Details = None }))
         else
             try
                 let genJwt =

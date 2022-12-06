@@ -5,7 +5,7 @@ open Microsoft.AspNetCore.Mvc.ModelBinding
 
 module Validation =
 
-    let addErrorToModelState (modelState: ModelStateDictionary) (err) =
+    let addErrorToModelState (modelState: ModelStateDictionary) err =
         match err with
         | TooShort errInfoOption ->
             modelState.AddModelError(fieldNameOrGeneric errInfoOption, toErrorMessage err errInfoOption)
@@ -22,7 +22,7 @@ module Validation =
         | Unauthorized ->
             modelState.AddModelError("Unauthorized", System.String.Empty)
 
-    let addErrorListToModelState (modelState: ModelStateDictionary) (errors) =
+    let addErrorListToModelState (modelState: ModelStateDictionary) errors =
         for err in errors do
             addErrorToModelState modelState err
 

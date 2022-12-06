@@ -33,7 +33,7 @@ let ``create validation Token Data from encrypted string Valid Token test ``() =
 
 [<TestCase(TokenType.ValidateEmail)>]
 [<TestCase(TokenType.ResetPassword)>]
-let ``create validation Token Data from encrypted string Token Type Test ``(tokenType) =
+let ``create validation Token Data from encrypted string Token Type Test `` tokenType =
     let tokenStr =
         AccountValidation.generateAccountTokenString "test@valid.org"
             (DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(1.0))) (fun e -> e) tokenType
@@ -53,7 +53,7 @@ let ``create validation Token Data from encrypted string Token Type Test ``(toke
 let ``create authentication Token Data from encrypted string Expired Token test ``() =
     let tokenStr =
         AccountValidation.generateAccountTokenString "test@valid.org"
-            (DateTimeOffset.UtcNow) (fun e -> e) TokenType.ValidateEmail
+            DateTimeOffset.UtcNow (fun e -> e) TokenType.ValidateEmail
 
     let validationTokenResult =
         AccountValidation.createToken tokenStr (DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(100.0))) (fun d -> d)

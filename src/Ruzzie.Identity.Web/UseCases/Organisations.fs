@@ -7,7 +7,6 @@ open Ruzzie.Identity.Web.ApiTypes
 open Ruzzie.Identity.Web.DomainTypes.Organisations
 open Email
 open Users
-open ResultLib
 open Shared
 open Microsoft.Extensions.Logging
 open Ruzzie.Identity.Storage.Azure
@@ -220,7 +219,7 @@ module Organisations =
             OrganisationInviteStatus.None
     let createOrganisationInvitesApiType invitesEntities =
           [
-              for (invite : Entities.OrganisationInvite) in invitesEntities do
+              for invite : Entities.OrganisationInvite in invitesEntities do
                   {
                       ApiTypes.OrganisationInvite.inviteeEmail = invite.InviteeEmail
                       ApiTypes.OrganisationInvite.inviteStatus = safeConvertInvitationStatus invite.InvitationStatus
@@ -234,7 +233,7 @@ module Organisations =
 
             let mutable resultList = List<ApiTypes.OrganisationUser>()
 
-            for (orgUser :  Entities.OrganisationUser) in orgUserEntities do
+            for orgUser :  Entities.OrganisationUser in orgUserEntities do
                 let userRegistrationRes = getUserByEmailStr userRepository orgUser.RowKey
 
                 match userRegistrationRes with
@@ -293,7 +292,7 @@ module Organisations =
                             }
                     )
                 //Add All users in the organisation
-                .=> (fun (apiOrganisation) ->
+                .=> (fun apiOrganisation ->
                         Ok
                             {
                                 apiOrganisation with users = List.ofSeq (createOrganisationUserApiType userRepository allUsers)

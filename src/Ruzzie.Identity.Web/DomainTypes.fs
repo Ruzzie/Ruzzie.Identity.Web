@@ -113,7 +113,7 @@ module DomainTypes =
 
         let create str errInfoOption =
             if String.IsNullOrWhiteSpace str then Error(CannotBeEmpty(errInfoOption))
-            else if (String.IsNullOrWhiteSpace(str.Trim())) then Error(CannotBeEmpty(errInfoOption))
+            else if String.IsNullOrWhiteSpace(str.Trim()) then Error(CannotBeEmpty(errInfoOption))
             else if (str.Length > Constants.Size32K) then Error(TooLong(errInfoOption))
             else Ok(T str)
 
@@ -123,7 +123,7 @@ module DomainTypes =
         type T = private T of string
         let create str errInfoOption =
             if String.IsNullOrWhiteSpace str then Error(CannotBeEmpty(errInfoOption))
-            else if (String.IsNullOrWhiteSpace(str.Trim())) then Error(CannotBeEmpty(errInfoOption))
+            else if String.IsNullOrWhiteSpace(str.Trim()) then Error(CannotBeEmpty(errInfoOption))
             else Ok(T str)
         let value (T str) = str
 
@@ -158,7 +158,7 @@ module DomainTypes =
                 if  part.Length = 1 then
                     false
                 else
-                    str.StartsWith(part.Substring(0, (Math.Min(part.Length, 4))), StringComparison.OrdinalIgnoreCase)
+                    str.StartsWith(part.Substring(0, Math.Min(part.Length, 4)), StringComparison.OrdinalIgnoreCase)
             else true
 
         let containsPartialStrWhenGtOne (input: String) part =
@@ -166,7 +166,7 @@ module DomainTypes =
                 if  part.Length = 1 then
                     false
                 else
-                    input.Contains(part.Substring(0, (Math.Min(part.Length, 6))), StringComparison.OrdinalIgnoreCase)
+                    input.Contains(part.Substring(0, Math.Min(part.Length, 6)), StringComparison.OrdinalIgnoreCase)
             else true
 
         let pwdStrengthValidation errInfoOption (forEmail: String) (forFirstname: String) (forLastname: String) requiredStr =
@@ -295,7 +295,7 @@ module DomainTypes =
         let createToken tokenStr utcNow decrypt =
 
             try
-                let checkExpiry utcNow tokenInfo =
+                let checkExpiry _utcNow tokenInfo =
     //                if utcNow >= tokenInfo.ExpiresAt then
     //                    ExpiredToken tokenInfo
     //                else
