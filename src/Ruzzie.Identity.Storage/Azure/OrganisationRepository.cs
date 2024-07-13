@@ -401,40 +401,24 @@ public class OrganisationRepository : IOrganisationRepository
 
         try
         {
-            return _organisationInvitesTable.Pool.ExecuteOnAvailableObject(table =>
-                                                                           {
-                                                                               var partitionKeyFilter =
-                                                                                   TableQuery
-                                                                                       .GenerateFilterCondition(TableQueryHelpers
-                                                                                                                    .PartitionKeyField
-                                                                                                              , TableQueryHelpers
-                                                                                                                    .OpEquals
-                                                                                                              , organisationId);
-                                                                               var invitationStatusFilter =
-                                                                                   TableQuery
-                                                                                       .GenerateFilterConditionForInt(
-                                                                                                                      nameof
-                                                                                                                      (OrganisationInvite
-                                                                                                                           .InvitationStatus)
-                                                                                                                    , TableQueryHelpers
-                                                                                                                          .OpEquals
-                                                                                                                    , invitationStatus);
+            var partitionKeyFilter = TableQuery.GenerateFilterCondition(TableQueryHelpers.PartitionKeyField
+                                                                      , TableQueryHelpers.OpEquals
+                                                                      , organisationId);
+            var invitationStatusFilter =
+                TableQuery.GenerateFilterConditionForInt(nameof(OrganisationInvite.InvitationStatus)
+                                                       , TableQueryHelpers.OpEquals
+                                                       , invitationStatus);
 
-                                                                               var query =
-                                                                                   new TableQuery<OrganisationInvite>
-                                                                                   {
-                                                                                       FilterString =
-                                                                                           TableQuery
-                                                                                               .CombineFilters(partitionKeyFilter
-                                                                                                             , TableQueryHelpers
-                                                                                                                   .OpAnd
-                                                                                                             , invitationStatusFilter)
-                                                                                   };
+            var query = new TableQuery<OrganisationInvite>
+                        {
+                            FilterString = TableQuery.CombineFilters(partitionKeyFilter
+                                                                   , TableQueryHelpers.OpAnd
+                                                                   , invitationStatusFilter)
+                        };
 
-                                                                               return table.ExecuteQuery(query)
-                                                                                           .ToList();
-                                                                           }
-                                                                          );
+
+            return _organisationInvitesTable.Table.ExecuteQuery(query)
+                                            .ToList();
         }
         catch (Exception e)
         {
@@ -449,16 +433,10 @@ public class OrganisationRepository : IOrganisationRepository
         try
         {
             var allPartitions = KeyGenerators.AllAlphaNumericPartitions;
-            return _organisationTable.Pool.ExecuteOnAvailableObject(table =>
-                                                                    {
-                                                                        return new AzureStorageTableLoader<
-                                                                                DynamicTableEntity, string>(table
-                                                                                                          , tableEntity =>
-                                                                                                                tableEntity
-                                                                                                                    .RowKey
-                                                                                                          , allPartitions)
-                                                                            .AllEntities;
-                                                                    });
+
+            return new AzureStorageTableLoader<DynamicTableEntity, string>(_organisationTable.Table
+                                                                         , tableEntity => tableEntity.RowKey
+                                                                         , allPartitions).AllEntities;
         }
         catch (Exception e)
         {

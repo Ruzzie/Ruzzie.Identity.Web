@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
         <Nullable>enable</Nullable>
         <Description>Storage interfaces and implementations for identity management</Description>
         <Copyright>Copyright © Dorus Verhoeckx 2021</Copyright>
@@ -15,9 +15,9 @@
     <ItemGroup>
 
         <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
-        <PackageReference Include="Ruzzie.Azure.Storage" Version="8.0.0.37" />
-        <PackageReference Include="Ruzzie.Common" Version="7.0.0.113" />
-        <PackageReference Include="Ruzzie.FuzzyStrings" Version="7.0.1.54" />
+        <PackageReference Include="Ruzzie.Azure.Storage" Version="10.0.0.40" />
+        <PackageReference Include="Ruzzie.Common" Version="7.0.0.115" />
+        <PackageReference Include="Ruzzie.FuzzyStrings" Version="7.0.1.55" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>

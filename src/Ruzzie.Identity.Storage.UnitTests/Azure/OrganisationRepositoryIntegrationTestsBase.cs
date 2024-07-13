@@ -86,8 +86,7 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
         //Assert
         gotEntity.Should()
                  .BeEquivalentTo(insertedEntity
-                               , options => options.Excluding(x => x.SelectedMemberInfo.DeclaringType ==
-                                                                   typeof(TableEntity)));
+                               , options => options.Excluding(x => x.DeclaringType == typeof(TableEntity)));
     }
 
     [Test]
@@ -254,8 +253,7 @@ public abstract class OrganisationRepositoryIntegrationTestsBase
                             , options => options.IncludingAllDeclaredProperties()
                                                 .Excluding(r => r.Timestamp)
                                                 .Excluding(r => r.ETag)
-                                                .Excluding(x => x.SelectedMemberInfo.DeclaringType ==
-                                                                typeof(TableEntity)));
+                                                .Excluding(x => x.DeclaringType == typeof(TableEntity)));
     }
 
     [Test]

@@ -25,8 +25,8 @@ public class UserRepositoryIntegrationTests
 
         _testTableName = nameof(UserRepositoryIntegrationTests);
         _repository =
-            new UserRepository(new CloudTablePool(_testTableName,
-                                                  CloudStorageAccount.Parse(connString).CreateCloudTableClient()));
+            new UserRepository(new CloudTablePool(_testTableName
+                                                , CloudStorageAccount.Parse(connString).CreateCloudTableClient()));
     }
 
     public static string CreateUniqueEmailForTest(string testName)
@@ -48,7 +48,8 @@ public class UserRepositoryIntegrationTests
     {
         //Arrange
         var email = CreateUniqueEmailForTest(nameof(InsertRegistrationAndCheckIfExists));
-        var entityToInsert = new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
+        var entityToInsert =
+            new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
 
         _repository.UserExists(email).Should().BeFalse();
 
@@ -57,8 +58,11 @@ public class UserRepositoryIntegrationTests
 
         //Assert
         _repository.UserExists(email).Should().BeTrue();
-        insertedEntity.Should().BeEquivalentTo(entityToInsert,
-                                               options => options.IncludingAllDeclaredProperties().Excluding(r => r.Timestamp).Excluding(r => r.ETag));
+        insertedEntity.Should()
+                      .BeEquivalentTo(entityToInsert
+                                    , options => options.IncludingAllDeclaredProperties()
+                                                        .Excluding(r => r.Timestamp)
+                                                        .Excluding(r => r.ETag));
     }
 
     [Test]
@@ -66,15 +70,17 @@ public class UserRepositoryIntegrationTests
     {
         //Arrange
         var email = CreateUniqueEmailForTest(nameof(GetUserByEmailThatExistsSmokeTest));
-        var entityToInsert = new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
+        var entityToInsert =
+            new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
         var insertedEntity = _repository.InsertNewUser(entityToInsert);
 
         //Act
         var gotEntity = _repository.GetUserByEmail(email);
 
         //Assert
-        gotEntity.Should().BeEquivalentTo(insertedEntity,
-                                          options => options.Excluding(x => x.SelectedMemberInfo.DeclaringType == typeof(TableEntity)));
+        gotEntity.Should()
+                 .BeEquivalentTo(insertedEntity
+                               , options => options.Excluding(x => x.DeclaringType == typeof(TableEntity)));
     }
 
     [Test]
@@ -95,8 +101,9 @@ public class UserRepositoryIntegrationTests
     {
         //Arrange
         var email = CreateUniqueEmailForTest(nameof(GetUserByEmailThatExistsSmokeTest));
-        var entityToInsert = new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
-        var entity = _repository.InsertNewUser(entityToInsert);
+        var entityToInsert =
+            new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
+        var entity            = _repository.InsertNewUser(entityToInsert);
         var originalTimeStamp = entity.LastModifiedDateTimeUtc;
 
         entity.ValidationStatusUpdateDateTimeUtc = DateTimeOffset.UtcNow;
@@ -109,7 +116,8 @@ public class UserRepositoryIntegrationTests
         //Assert
         //ReferenceEquals(entity, updatedEntity).Should().BeFalse();
 
-        updatedEntity.Should().BeSameAs(entity);//GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
+        updatedEntity.Should()
+                     .BeSameAs(entity); //GRRR: It returns the same reference: this is behavior of the Table Storage SDK.
         // updatedEntity.Should().BeEquivalentTo(entity,
         //     options => options.IncludingAllDeclaredProperties().Excluding(r => r.Timestamp).Excluding(r => r.ETag));
         updatedEntity.LastModifiedDateTimeUtc.Should().BeAfter(originalTimeStamp);
@@ -120,7 +128,8 @@ public class UserRepositoryIntegrationTests
     {
         //Arrange
         var email = CreateUniqueEmailForTest(nameof(GetUserByEmailThatExistsSmokeTest));
-        var entityToInsert = new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
+        var entityToInsert =
+            new UserRegistration(email, "nopwd", "Repository", "Test", "notoken", DateTimeOffset.UtcNow);
 
         //Insert
         var _ = _repository.InsertNewUser(entityToInsert);
