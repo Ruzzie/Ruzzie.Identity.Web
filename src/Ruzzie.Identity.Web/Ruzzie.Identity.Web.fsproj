@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
         <Description>Identity and user management logic for web apps</Description>
-        <Copyright>Copyright © Dorus Verhoeckx 2020, 2021</Copyright>
+        <Copyright>Copyright © Dorus Verhoeckx 2020 - 2024</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <Authors>Dorus Verhoeckx</Authors>
         <PackageVersion>0.0.0.1</PackageVersion>
